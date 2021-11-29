@@ -7,9 +7,18 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "axios": "^0.24.0",
+    "blockly": "^6.20210701.0",
     "core-js": "^3.6.5",
+    "download": "^8.0.0",
+    "element-ui": "^2.15.6",
+    "js-file-downloader": "^1.1.22",
+    "lodash": "^4.17.21",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-vue": "^0.11.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
+    "vue-toastification": "^1.7.14",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
