@@ -42,11 +42,11 @@
             <i class="iconfont icon-dabaoxiazai"></i>
           </el-tooltip>
         </div>
-<!--        <div class="icon-con">-->
-<!--          <el-tooltip class="item" effect="dark" content="发送代码并执行" placement="bottom-start">-->
-<!--            <i class="iconfont icon-icon_sent"></i>-->
-<!--          </el-tooltip>-->
-<!--        </div>-->
+        <!--        <div class="icon-con">-->
+        <!--          <el-tooltip class="item" effect="dark" content="发送代码并执行" placement="bottom-start">-->
+        <!--            <i class="iconfont icon-icon_sent"></i>-->
+        <!--          </el-tooltip>-->
+        <!--        </div>-->
       </div>
     </div>
 
@@ -209,6 +209,7 @@
 import Blockly from 'blockly'
 import 'blockly/python'
 import _ from 'lodash'
+
 import api from '@/api'
 import lib from '@/lib'
 import settings from '@/settings'
@@ -225,132 +226,7 @@ export default {
       // Blockly 将图形转换成的python代码
       code: null,
       // Blockly 工具箱配置
-      toolbox: {
-        kind: 'categoryToolbox',
-        contents: [
-          {
-            kind: 'category',
-            name: '核心模块',
-            contents: [
-              {
-                kind: 'category',
-                name: '逻辑',
-                contents: [
-                  {
-                    kind: 'block',
-                    type: 'controls_if'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'logic_compare'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'logic_boolean'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'logic_operation'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'logic_negate'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'logic_null'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'logic_ternary'
-                  }
-                ]
-              },
-              {
-                kind: 'category',
-                name: '循环',
-                contents: [
-                  {
-                    kind: 'block',
-                    type: 'controls_repeat_ext'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'controls_for'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'controls_forEach'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'controls_flow_statements'
-                  }
-                ]
-              },
-              {
-                kind: 'category',
-                name: '数学',
-                contents: [
-                  {
-                    kind: 'block',
-                    type: 'math_number'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_arithmetic'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_single'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_trig'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_constant'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_number_property'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_round'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_on_list'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_modulo'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_constrain'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_random_int'
-                  },
-                  {
-                    kind: 'block',
-                    type: 'math_random_float'
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            kind: 'category',
-            name: '自定义函数',
-            contents: []
-          }
-        ]
-      },
+      toolbox: lib.DEFAULT_TOOLBOX_SETTINGS,
       // Blockly 其他配置
       optOptions: {
         grid: {
@@ -463,44 +339,45 @@ export default {
       if (val === true) {
         this.projectTableForm.page = 1
         api.loadProjects(this.queryProjectParams)
-           .then(res => {
-             this.projectTableForm.count = res.data.count
-             this.projectTableForm.results = res.data.results
-           })
-           .catch(() => {
-             this.projectTableForm.results = []
-           })
+            .then(res => {
+              this.projectTableForm.count = res.data.count
+              this.projectTableForm.results = res.data.results
+            })
+            .catch(() => {
+              this.projectTableForm.results = []
+            })
       }
     },
     isShowFunctionCodeListPanel(val) {
       if (val === true) {
         this.functionTableForm.page = 1
         api.loadFunctionCodes(this.queryFunctionParams)
-           .then(res => {
-             this.functionTableForm.count = res.data.count
-             this.functionTableForm.results = res.data.results
-           })
-           .catch(() => {
-             this.functionTableForm.results = []
-           })
+            .then(res => {
+              this.functionTableForm.count = res.data.count
+              this.functionTableForm.results = res.data.results
+            })
+            .catch(() => {
+              this.functionTableForm.results = []
+            })
       }
     },
     isShowTemplatePanel(val) {
       if (val === true) {
         this.templateTableForm.page = 1
         api.loadGenerateTemplates(this.queryTemplateParams)
-           .then(res => {
-             this.templateTableForm.count = res.data.count
-             this.templateTableForm.results = res.data.results
-           })
-           .catch(() => {
-             this.templateTableForm.results = []
-           })
+            .then(res => {
+              this.templateTableForm.count = res.data.count
+              this.templateTableForm.results = res.data.results
+            })
+            .catch(() => {
+              this.templateTableForm.results = []
+            })
       }
     }
   },
   methods: {
-    printInfo() {
+    printInfo(data) {
+      console.log(data)
     },
     // 初始化 blockly 工作空间
     initBlocklyWS() {
@@ -553,22 +430,22 @@ export default {
     updateInitInfo() {
       // 加载面板信息
       api.getPanelInfo()
-         .then(res => {
-           this.panelInfo = res.data
-         })
+          .then(res => {
+            this.panelInfo = res.data
+          })
 
       // 加载自定义函数
       api.loadFunctionCodes({page: 1, page_size: settings.DEFAULT_USER_DEFINED_BLOCKS_NUMBER})
-         .then(res => {
-           this.allFunctionCodeList = res.data.results
-           this.initBlocklyWS()
-         })
+          .then(res => {
+            this.allFunctionCodeList = res.data.results
+            this.initBlocklyWS()
+          })
 
       // 加载自定义模板
       api.loadGenerateTemplates({page: 1, page_size: settings.DEFAULT_USER_DEFINED_TEMPLATE_NUMBER})
-         .then(res => {
-           this.allTemplateList = res.data.results
-         })
+          .then(res => {
+            this.allTemplateList = res.data.results
+          })
     },
     // 保存项目代码
     saveProject: _.debounce(function (projectTitle) {
@@ -584,21 +461,21 @@ export default {
 
       this.isLoading = true
       api.saveProject(form)
-         .then(res => {
-           this.isLoading = false
-           if (res.status === 201) {
-             this.$message.success('保存成功')
-             this.updateInitInfo()
-           } else {
-             this.$message.error('保存失败')
-           }
-         })
-         .catch(res => {
-           this.isLoading = false
-           if (res.response.data.title[0] === '具有 项目名称 的 Blockly项目 已存在。') {
-             this.$message.error('该项目名称已存在')
-           }
-         })
+          .then(res => {
+            this.isLoading = false
+            if (res.status === 201) {
+              this.$message.success('保存成功')
+              this.updateInitInfo()
+            } else {
+              this.$message.error('保存失败')
+            }
+          })
+          .catch(res => {
+            this.isLoading = false
+            if (res.response.data.title[0] === '具有 项目名称 的 Blockly项目 已存在。') {
+              this.$message.error('该项目名称已存在')
+            }
+          })
 
       this.projectTitle = ''
     }, 400),
@@ -618,18 +495,18 @@ export default {
         type: 'warning'
       }).then(() => {
         api.deleteFunctionCode({}, id)
-           .then(res => {
-             this.$message.success('删除成功')
-             this.updateInitInfo()
-             api.loadFunctionCodes(this.queryFunctionParams)
-                .then(res => {
-                  this.functionTableForm.count = res.data.count
-                  this.functionTableForm.results = res.data.results
-                })
-                .catch(() => {
-                  this.functionTableForm.results = []
-                })
-           })
+            .then(res => {
+              this.$message.success('删除成功')
+              this.updateInitInfo()
+              api.loadFunctionCodes(this.queryFunctionParams)
+                  .then(res => {
+                    this.functionTableForm.count = res.data.count
+                    this.functionTableForm.results = res.data.results
+                  })
+                  .catch(() => {
+                    this.functionTableForm.results = []
+                  })
+            })
       })
     },
     // 编辑模板事件
@@ -647,18 +524,18 @@ export default {
         type: 'warning'
       }).then(() => {
         api.deleteGenerateTemplate({}, id)
-           .then(() => {
-             this.$message.success('删除成功')
-             this.updateInitInfo()
-             api.loadGenerateTemplates(this.queryTemplateParams)
-                .then(res => {
-                  this.templateTableForm.count = res.data.count
-                  this.templateTableForm.results = res.data.results
-                })
-                .catch(() => {
-                  this.templateTableForm.results = []
-                })
-           })
+            .then(() => {
+              this.$message.success('删除成功')
+              this.updateInitInfo()
+              api.loadGenerateTemplates(this.queryTemplateParams)
+                  .then(res => {
+                    this.templateTableForm.count = res.data.count
+                    this.templateTableForm.results = res.data.results
+                  })
+                  .catch(() => {
+                    this.templateTableForm.results = []
+                  })
+            })
       })
     },
     // 导入项目事件
@@ -669,16 +546,16 @@ export default {
         type: 'warning'
       }).then(() => {
         api.loadProjectDetail({}, id)
-           .then(res => {
-             this.isShowOpenProjectPanel = false
-             this.isLoading = true
-             lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
-             setTimeout(() => {
-               this.isLoading = false
-               lib.blocklyXMLToDOM(res.data.code, this.blocklyWorkSpaceIns)
-               this.$message.success('导入成功')
-             }, 400)
-           })
+            .then(res => {
+              this.isShowOpenProjectPanel = false
+              this.isLoading = true
+              lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
+              setTimeout(() => {
+                this.isLoading = false
+                lib.blocklyXMLToDOM(res.data.code, this.blocklyWorkSpaceIns)
+                this.$message.success('导入成功')
+              }, 400)
+            })
       })
     },
     // 删除项目事件
@@ -689,15 +566,15 @@ export default {
         type: 'warning'
       }).then(() => {
         api.deleteProject({}, id)
-           .then(() => {
-             this.$message.success('删除成功')
-             this.updateInitInfo()
-             api.loadProjects(this.queryProjectParams)
-                .then(res => {
-                  res.data.page = this.projectTableForm.page
-                  this.projectTableForm = res.data
-                })
-           })
+            .then(() => {
+              this.$message.success('删除成功')
+              this.updateInitInfo()
+              api.loadProjects(this.queryProjectParams)
+                  .then(res => {
+                    res.data.page = this.projectTableForm.page
+                    this.projectTableForm = res.data
+                  })
+            })
       })
     },
     // 保存模板事件
@@ -713,34 +590,34 @@ export default {
 
       this.isLoading = true
       api.saveGenerateTemplate(form)
-         .then(res => {
-           this.isLoading = false
-           if (res.status === 201) {
-             this.isShowTemplateAdder = false
-             this.templateName = ''
-             this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
-             this.$message.success('模板保存成功')
-             this.updateInitInfo()
-             api.loadGenerateTemplates(this.queryTemplateParams)
-                .then(res => {
-                  this.templateTableForm.count = res.data.count
-                  this.templateTableForm.results = res.data.results
-                })
-                .catch(() => {
-                  this.templateTableForm.results = []
-                })
-           } else {
-             this.$message.error('模板保存失败')
-           }
-         })
-         .catch(err => {
-           this.isLoading = false
-           if (err.response.data.name[0] === '具有 模板名 的 代码模板 已存在。') {
-             this.$message.error('该模板名称已存在')
-           } else {
-             this.$message.error('保存失败')
-           }
-         })
+          .then(res => {
+            this.isLoading = false
+            if (res.status === 201) {
+              this.isShowTemplateAdder = false
+              this.templateName = ''
+              this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
+              this.$message.success('模板保存成功')
+              this.updateInitInfo()
+              api.loadGenerateTemplates(this.queryTemplateParams)
+                  .then(res => {
+                    this.templateTableForm.count = res.data.count
+                    this.templateTableForm.results = res.data.results
+                  })
+                  .catch(() => {
+                    this.templateTableForm.results = []
+                  })
+            } else {
+              this.$message.error('模板保存失败')
+            }
+          })
+          .catch(err => {
+            this.isLoading = false
+            if (err.response.data.name[0] === '具有 模板名 的 代码模板 已存在。') {
+              this.$message.error('该模板名称已存在')
+            } else {
+              this.$message.error('保存失败')
+            }
+          })
     }, 400),
     // 清空工作区事件
     handleClearWorkspace() {
@@ -756,37 +633,37 @@ export default {
     handleProjectTablePageChange(page) {
       this.projectTableForm.page = page
       api.loadProjects(this.queryProjectParams)
-         .then(res => {
-           this.projectTableForm.count = res.data.count
-           this.projectTableForm.results = res.data.results
-         })
-         .catch(() => {
-           this.projectTableForm.results = []
-         })
+          .then(res => {
+            this.projectTableForm.count = res.data.count
+            this.projectTableForm.results = res.data.results
+          })
+          .catch(() => {
+            this.projectTableForm.results = []
+          })
     },
     // 自定义模板列表页码变换事件
     handleTemplateTablePageChanged(page) {
       this.functionTableForm.page = page
       api.loadGenerateTemplates(this.queryFunctionParams)
-         .then(res => {
-           this.templateTableForm.count = res.data.count
-           this.templateTableForm.results = res.data.results
-         })
-         .catch(() => {
-           this.functionTableForm.results = []
-         })
+          .then(res => {
+            this.templateTableForm.count = res.data.count
+            this.templateTableForm.results = res.data.results
+          })
+          .catch(() => {
+            this.functionTableForm.results = []
+          })
     },
     // 自定义函数列表页码变换事件
     handleFunctionTablePageChanged(page) {
       this.functionTableForm.page = page
       api.loadFunctionCodes(this.queryFunctionParams)
-         .then(res => {
-           this.functionTableForm.count = res.data.count
-           this.functionTableForm.results = res.data.results
-         })
-         .catch(() => {
-           this.functionTableForm.results = []
-         })
+          .then(res => {
+            this.functionTableForm.count = res.data.count
+            this.functionTableForm.results = res.data.results
+          })
+          .catch(() => {
+            this.functionTableForm.results = []
+          })
     },
     // 生成代码确认事件
     handleConfirmGenerateCode() {
@@ -797,22 +674,22 @@ export default {
 
       const form = Object.assign({code: this.code}, this.templateAdderForm)
       api.generateCode(form)
-         .then(res => {
-           if (res.data.timestamp) {
-             this.$toast.success('代码生成完毕')
-             this.isShowPackagerPanel = false
+          .then(res => {
+            if (res.data.timestamp) {
+              this.$toast.success('代码生成完毕')
+              this.isShowPackagerPanel = false
 
-             // download file
-             setTimeout(() => {
-               new JsFileDownloader({
-                 url: api.generateCodeURL(res.data.timestamp),
-                 filename: `${res.data.timestamp}-results.py`
-               }).then(() => {
-               })
-             }, 1000)
+              // download file
+              setTimeout(() => {
+                new JsFileDownloader({
+                  url: api.generateCodeURL(res.data.timestamp),
+                  filename: `${res.data.timestamp}-results.py`
+                }).then(() => {
+                })
+              }, 1000)
 
-           }
-         })
+            }
+          })
     },
     // 更新模板事件事件
     handleConfirmUpdateTemplate: _.debounce(function () {
@@ -827,26 +704,26 @@ export default {
 
       this.isLoading = true
       api.updateGenerateTemplate(form, this.currentEditedTemplate.id)
-         .then(res => {
-           this.isLoading = false
-           this.isShowTemplateEditor = false
-           this.templateName = ''
-           this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
-           this.$message.success('模板保存成功')
-           this.updateInitInfo()
-           api.loadGenerateTemplates(this.queryTemplateParams)
-              .then(res => {
-                this.templateTableForm.count = res.data.count
-                this.templateTableForm.results = res.data.results
-              })
-              .catch(err => {
-                this.templateTableForm.results = []
-              })
-         })
-         .catch(err => {
-           this.isLoading = false
-           this.$message.error('修改失败')
-         })
+          .then(res => {
+            this.isLoading = false
+            this.isShowTemplateEditor = false
+            this.templateName = ''
+            this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
+            this.$message.success('模板保存成功')
+            this.updateInitInfo()
+            api.loadGenerateTemplates(this.queryTemplateParams)
+                .then(res => {
+                  this.templateTableForm.count = res.data.count
+                  this.templateTableForm.results = res.data.results
+                })
+                .catch(err => {
+                  this.templateTableForm.results = []
+                })
+          })
+          .catch(err => {
+            this.isLoading = false
+            this.$message.error('修改失败')
+          })
 
     }, 400),
     // 取消更新模板事件
@@ -878,32 +755,32 @@ export default {
 
       this.isLoading = true
       api.saveFunctionCode(form)
-         .then(res => {
-           this.isLoading = false
-           if (res.status === 201) {
-             this.isShowFunctionCodeAdder = false
-             this.functionCode = ''
-             this.functionName = ''
-             this.$message.success('保存成功')
-             this.updateInitInfo()
-             api.loadFunctionCodes(this.queryFunctionParams)
-                .then(res => {
-                  this.functionTableForm.count = res.data.count
-                  this.functionTableForm.results = res.data.results
-                })
-                .catch(() => {
-                  this.functionTableForm.results = []
-                })
-           } else {
-             this.$message.error('保存失败')
-           }
-         })
-         .catch(res => {
-           this.isLoading = false
-           if (res.response.data.name[0] === '具有 函数名 的 Blockly自定义函数 已存在。') {
-             this.$message.error('该函数名称已存在，保存失败')
-           }
-         })
+          .then(res => {
+            this.isLoading = false
+            if (res.status === 201) {
+              this.isShowFunctionCodeAdder = false
+              this.functionCode = ''
+              this.functionName = ''
+              this.$message.success('保存成功')
+              this.updateInitInfo()
+              api.loadFunctionCodes(this.queryFunctionParams)
+                  .then(res => {
+                    this.functionTableForm.count = res.data.count
+                    this.functionTableForm.results = res.data.results
+                  })
+                  .catch(() => {
+                    this.functionTableForm.results = []
+                  })
+            } else {
+              this.$message.error('保存失败')
+            }
+          })
+          .catch(res => {
+            this.isLoading = false
+            if (res.response.data.name[0] === '具有 函数名 的 Blockly自定义函数 已存在。') {
+              this.$message.error('该函数名称已存在，保存失败')
+            }
+          })
 
     }, 400),
     // 自定义函数添加 取消事件
@@ -924,21 +801,21 @@ export default {
       }
 
       api.updateFunctionCode(form, this.currentEditedFunction.id)
-         .then(res => {
-           this.isShowFunctionCodeEditor = false
-           this.functionCode = ''
-           this.functionName = ''
-           this.$message.success('保存成功')
-           this.updateInitInfo()
-           api.loadFunctionCodes(this.queryFunctionParams)
-              .then(res => {
-                this.functionTableForm.count = res.data.count
-                this.functionTableForm.results = res.data.results
-              })
-              .catch(() => {
-                this.functionTableForm.results = []
-              })
-         })
+          .then(res => {
+            this.isShowFunctionCodeEditor = false
+            this.functionCode = ''
+            this.functionName = ''
+            this.$message.success('保存成功')
+            this.updateInitInfo()
+            api.loadFunctionCodes(this.queryFunctionParams)
+                .then(res => {
+                  this.functionTableForm.count = res.data.count
+                  this.functionTableForm.results = res.data.results
+                })
+                .catch(() => {
+                  this.functionTableForm.results = []
+                })
+          })
     }, 400),
     // 自定义函数编辑 取消事件
     handleCancelFunctionCodeEditor() {
