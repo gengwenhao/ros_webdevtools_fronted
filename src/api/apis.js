@@ -1,7 +1,22 @@
 import axios from 'axios'
 
-// const HOST = 'http://172.17.152.76:8000'
+// const HOST = 'http://172.17.154.4:8000'
 const HOST = 'http://localhost:8000'
+
+// 发送代码到远程机器
+export const sendCode = (data) => axios.post(`${HOST}/send_code/`, data)
+
+// 加载远程机器列表
+export const loadRemoteMachines = (params, config) => axios.get(`${HOST}/remote_machine/`, {...config, params})
+
+// 添加远程机器
+export const saveRemoteMachine = (data) => axios.post(`${HOST}/remote_machine/`, data)
+
+// 更新远程机器
+export const updateRemoteMachine = (data) => axios.put(`${HOST}/remote_machine/`, data)
+
+// 删除远程机器
+export const deleteRemoteMachine = (params, config) => axios.delete(`${HOST}/remote_machine/`, {...config, params})
 
 // 面板相关信息
 export const getPanelInfo = (params, config) => axios.get(`${HOST}/panel_info/`, {...config, params})
@@ -29,8 +44,8 @@ export const loadFunctionCodes = (params, config) => axios.get(`${HOST}/blockly_
 
 // 删除自定义Blockly函数
 export const deleteFunctionCode = (params, id, config) => axios.delete(`${HOST}/blockly_block/${id}/`, {
-    ...config,
-    params
+  ...config,
+  params
 })
 
 // 保存代码模板
@@ -41,8 +56,8 @@ export const updateGenerateTemplate = (data, id) => axios.put(`${HOST}/code_temp
 
 // 删除代码模板
 export const deleteGenerateTemplate = (params, id, config) => axios.delete(`${HOST}/code_template/${id}/`, {
-    ...config,
-    params
+  ...config,
+  params
 })
 
 // 加载代码模板
