@@ -18,7 +18,7 @@
                width="1088px"
                :visible.sync="dialogVisible">
       <div class="dia-con">
-        <img ondragstart="return false;" src="@/statics/images/ROS图形化编程原理图.png">
+        <img ondragstart="return false;" src="@/assets/ROS图形化编程原理图.png" alt="ROS图形化编程原理图">
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>

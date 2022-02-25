@@ -1,7 +1,8 @@
 import axios from 'axios'
 
-// const HOST = 'http://172.17.154.4:8000'
-const HOST = 'http://localhost:8000'
+// const HOST = 'http://localhost:8000'
+// const HOST = 'http://192.168.1.105:8000'
+const HOST = ''
 
 // 发送代码到远程机器
 export const sendCode = (data) => axios.post(`${HOST}/send_code/`, data)
