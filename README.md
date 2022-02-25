@@ -1,19 +1,11 @@
-# ros_webdevtools_fronted
+#### 更换nvm源为淘宝镜像
 
-## Project setup
-```
-yarn install
-```
+##### 方法一（临时）
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+`NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node`
 
-### Compiles and minifies for production
-```
-yarn build
-```
+##### 方法二（永久）
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+在 ~/.bashrc 中添加下列语句
+
+`export NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node`
