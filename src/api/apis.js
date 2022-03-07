@@ -22,47 +22,47 @@ export const deleteRemoteMachine = (params, config) => axios.delete(`${HOST}/api
 // 面板相关信息
 export const getPanelInfo = (params, config) => axios.get(`${HOST}/api/panel_info/`, {...config, params})
 
-// 保存项目
-export const saveProject = (data) => axios.post(`${HOST}/api/project/`, data)
+// 保存解决方案
+export const saveSolution = (data) => axios.post(`${HOST}/api/solution/`, data)
 
-// 加载项目列表
-export const loadProjects = (params, config) => axios.get(`${HOST}/api/project/`, {...config, params})
+// 加载全部解决方案
+export const loadSolutions = (params, config) => axios.get(`${HOST}/api/solution/`, {...config, params})
 
-// 加载项目
-export const loadProjectDetail = (params, id, config) => axios.get(`${HOST}/api/project/${id}/`, {...config, params})
+// 加载解决方案
+export const loadSolutionDetail = (params, id, config) => axios.get(`${HOST}/api/solution/${id}/`, {...config, params})
 
-// 删除项目
-export const deleteProject = (params, id, config) => axios.delete(`${HOST}/api/project/${id}/`, {...config, params})
+// 删除解决方案
+export const deleteSolution = (params, id, config) => axios.delete(`${HOST}/api/solution/${id}/`, {...config, params})
 
-// 保存自定义Blockly函数
-export const saveFunctionCode = (data) => axios.post(`${HOST}/api/blockly_block/`, data)
+// 保存用户自定义编程模块
+export const saveDefinedBlock = (data) => axios.post(`${HOST}/api/defined_block/`, data)
 
-// 修改自定义Blockly函数
-export const updateFunctionCode = (data, id) => axios.put(`${HOST}/api/blockly_block/${id}/`, data)
+// 修改用户自定义编程模块
+export const updateDefinedBlock = (data, id) => axios.put(`${HOST}/api/defined_block/${id}/`, data)
 
-// 加载自定义Blockly函数
-export const loadFunctionCodes = (params, config) => axios.get(`${HOST}/api/blockly_block/`, {...config, params})
+// 加载用户自定义编程模块
+export const loadDefinedBlock = (params, config) => axios.get(`${HOST}/api/defined_block/`, {...config, params})
 
-// 删除自定义Blockly函数
-export const deleteFunctionCode = (params, id, config) => axios.delete(`${HOST}/api/blockly_block/${id}/`, {
+// 删除用户自定义编程模块
+export const deleteDefinedBlock = (params, id, config) => axios.delete(`${HOST}/api/defined_block/${id}/`, {
   ...config,
   params
 })
 
 // 保存代码模板
-export const saveGenerateTemplate = (data) => axios.post(`${HOST}/api/code_template/`, data)
+export const saveCodeTemplate = (data) => axios.post(`${HOST}/api/code_template/`, data)
 
 // 修改代码模板
-export const updateGenerateTemplate = (data, id) => axios.put(`${HOST}/api/code_template/${id}/`, data)
+export const updateCodeTemplate = (data, id) => axios.put(`${HOST}/api/code_template/${id}/`, data)
 
 // 删除代码模板
-export const deleteGenerateTemplate = (params, id, config) => axios.delete(`${HOST}/api/code_template/${id}/`, {
+export const deleteCodeTemplate = (params, id, config) => axios.delete(`${HOST}/api/code_template/${id}/`, {
   ...config,
   params
 })
 
 // 加载代码模板
-export const loadGenerateTemplates = (params, config) => axios.get(`${HOST}/api/code_template/`, {...config, params})
+export const loadCodeTemplates = (params, config) => axios.get(`${HOST}/api/code_template/`, {...config, params})
 
 // 生成代码
 export const generateCode = (data) => axios.post(`${HOST}/api/generate_code/`, data)

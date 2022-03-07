@@ -3,23 +3,20 @@
     <!-- 按钮组 -->
     <div class="icon-group-con">
       <div class="icon-group">
-        <div class="icon-con" @click="isShowOpenProjectPanel = true">
-          <el-badge :value="panelInfo.projectCnt">
-            <el-tooltip class="item" effect="dark" content="打开项目" placement="bottom-start">
-              <i class="iconfont icon-wenjianjia"></i>
-            </el-tooltip>
-          </el-badge>
-        </div>
-        <div class="icon-con" @click="handleClickSaveProject">
-          <el-tooltip class="item" effect="dark" content="保存项目" placement="bottom-start">
-            <i class="iconfont icon-baocun1"></i>
-          </el-tooltip>
-        </div>
-        <div class="icon-con" @click="handleClearWorkspace">
-          <el-tooltip class="item" effect="dark" content="清空工作区" placement="bottom-start">
-            <i class="iconfont icon-act_qingkong"></i>
-          </el-tooltip>
-        </div>
+
+        <!--        <div class="icon-con" @click="isShowOpenProjectPanel = true">-->
+        <!--          <el-badge :value="panelInfo.projectCnt">-->
+        <!--            <el-tooltip class="item" effect="dark" content="打开项目" placement="bottom-start">-->
+        <!--              <i class="iconfont icon-wenjianjia"></i>-->
+        <!--            </el-tooltip>-->
+        <!--          </el-badge>-->
+        <!--        </div>-->
+        <!--        <div class="icon-con" @click="handleClickSaveProject">-->
+        <!--          <el-tooltip class="item" effect="dark" content="保存项目" placement="bottom-start">-->
+        <!--            <i class="iconfont icon-baocun1"></i>-->
+        <!--          </el-tooltip>-->
+        <!--        </div>-->
+
         <div class="icon-con" @click="isShowTemplatePanel = true">
           <el-badge :value="panelInfo.templateCnt">
             <el-tooltip class="item" effect="dark" content="新建代码生成模板" placement="bottom-start">
@@ -27,6 +24,7 @@
             </el-tooltip>
           </el-badge>
         </div>
+
         <div class="icon-con" @click="isShowFunctionCodeListPanel = true">
           <el-badge :value="panelInfo.blocklyFunctionCnt">
             <el-tooltip class="item" effect="dark" content="新建自定义函数" placement="bottom-start">
@@ -34,6 +32,12 @@
             </el-tooltip>
           </el-badge>
         </div>
+
+<!--        <div class="icon-con" @click="handleClearWorkspace">-->
+<!--          <el-tooltip class="item" effect="dark" content="清空工作区" placement="bottom-start">-->
+<!--            <i class="iconfont icon-act_qingkong"></i>-->
+<!--          </el-tooltip>-->
+<!--        </div>-->
       </div>
 
       <div class="icon-group">
@@ -374,7 +378,7 @@ export default {
     isShowOpenProjectPanel(val) {
       if (val === true) {
         this.projectTableForm.page = 1
-        api.loadProjects(this.queryProjectParams)
+        api.loadSolutions(this.queryProjectParams)
            .then(res => {
              this.projectTableForm.count = res.data.count
              this.projectTableForm.results = res.data.results
@@ -387,7 +391,7 @@ export default {
     isShowFunctionCodeListPanel(val) {
       if (val === true) {
         this.functionTableForm.page = 1
-        api.loadFunctionCodes(this.queryFunctionParams)
+        api.loadDefinedBlock(this.queryFunctionParams)
            .then(res => {
              this.functionTableForm.count = res.data.count
              this.functionTableForm.results = res.data.results
@@ -400,7 +404,7 @@ export default {
     isShowTemplatePanel(val) {
       if (val === true) {
         this.templateTableForm.page = 1
-        api.loadGenerateTemplates(this.queryTemplateParams)
+        api.loadCodeTemplates(this.queryTemplateParams)
            .then(res => {
              this.templateTableForm.count = res.data.count
              this.templateTableForm.results = res.data.results
@@ -472,14 +476,14 @@ export default {
          })
 
       // 加载自定义函数
-      api.loadFunctionCodes({page: 1, page_size: settings.DEFAULT_USER_DEFINED_BLOCKS_NUMBER})
+      api.loadDefinedBlock({page: 1, page_size: settings.DEFAULT_USER_DEFINED_BLOCKS_NUMBER})
          .then(res => {
            this.allFunctionCodeList = res.data.results
            this.initBlocklyWS()
          })
 
       // 加载自定义模板
-      api.loadGenerateTemplates({page: 1, page_size: settings.DEFAULT_USER_DEFINED_TEMPLATE_NUMBER})
+      api.loadCodeTemplates({page: 1, page_size: settings.DEFAULT_USER_DEFINED_TEMPLATE_NUMBER})
          .then(res => {
            this.allTemplateList = res.data.results
          })
@@ -503,7 +507,7 @@ export default {
       }
 
       this.isLoading = true
-      api.saveProject(form)
+      api.saveSolution(form)
          .then(res => {
            this.isLoading = false
            if (res.status === 201) {
@@ -537,11 +541,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.deleteFunctionCode({}, id)
+        api.deleteDefinedBlock({}, id)
            .then(res => {
              this.$message.success('删除成功')
              this.updateInitInfo()
-             api.loadFunctionCodes(this.queryFunctionParams)
+             api.loadDefinedBlock(this.queryFunctionParams)
                 .then(res => {
                   this.functionTableForm.count = res.data.count
                   this.functionTableForm.results = res.data.results
@@ -566,11 +570,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.deleteGenerateTemplate({}, id)
+        api.deleteCodeTemplate({}, id)
            .then(() => {
              this.$message.success('删除成功')
              this.updateInitInfo()
-             api.loadGenerateTemplates(this.queryTemplateParams)
+             api.loadCodeTemplates(this.queryTemplateParams)
                 .then(res => {
                   this.templateTableForm.count = res.data.count
                   this.templateTableForm.results = res.data.results
@@ -588,7 +592,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.loadProjectDetail({}, id)
+        api.loadSolutionDetail({}, id)
            .then(res => {
              this.isShowOpenProjectPanel = false
              this.isLoading = true
@@ -608,11 +612,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.deleteProject({}, id)
+        api.deleteSolution({}, id)
            .then(() => {
              this.$message.success('删除成功')
              this.updateInitInfo()
-             api.loadProjects(this.queryProjectParams)
+             api.loadSolutions(this.queryProjectParams)
                 .then(res => {
                   res.data.page = this.projectTableForm.page
                   this.projectTableForm = res.data
@@ -632,7 +636,7 @@ export default {
       }
 
       this.isLoading = true
-      api.saveGenerateTemplate(form)
+      api.saveCodeTemplate(form)
          .then(res => {
            this.isLoading = false
            if (res.status === 201) {
@@ -641,7 +645,7 @@ export default {
              this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
              this.$message.success('模板保存成功')
              this.updateInitInfo()
-             api.loadGenerateTemplates(this.queryTemplateParams)
+             api.loadCodeTemplates(this.queryTemplateParams)
                 .then(res => {
                   this.templateTableForm.count = res.data.count
                   this.templateTableForm.results = res.data.results
@@ -675,7 +679,7 @@ export default {
     // 项目列表页码变换事件
     handleProjectTablePageChange(page) {
       this.projectTableForm.page = page
-      api.loadProjects(this.queryProjectParams)
+      api.loadSolutions(this.queryProjectParams)
          .then(res => {
            this.projectTableForm.count = res.data.count
            this.projectTableForm.results = res.data.results
@@ -687,7 +691,7 @@ export default {
     // 自定义模板列表页码变换事件
     handleTemplateTablePageChanged(page) {
       this.functionTableForm.page = page
-      api.loadGenerateTemplates(this.queryFunctionParams)
+      api.loadCodeTemplates(this.queryFunctionParams)
          .then(res => {
            this.templateTableForm.count = res.data.count
            this.templateTableForm.results = res.data.results
@@ -699,7 +703,7 @@ export default {
     // 自定义函数列表页码变换事件
     handleFunctionTablePageChanged(page) {
       this.functionTableForm.page = page
-      api.loadFunctionCodes(this.queryFunctionParams)
+      api.loadDefinedBlock(this.queryFunctionParams)
          .then(res => {
            this.functionTableForm.count = res.data.count
            this.functionTableForm.results = res.data.results
@@ -781,7 +785,7 @@ export default {
       }
 
       this.isLoading = true
-      api.updateGenerateTemplate(form, this.currentEditedTemplate.id)
+      api.updateCodeTemplate(form, this.currentEditedTemplate.id)
          .then(res => {
            this.isLoading = false
            this.isShowTemplateEditor = false
@@ -789,7 +793,7 @@ export default {
            this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
            this.$message.success('模板保存成功')
            this.updateInitInfo()
-           api.loadGenerateTemplates(this.queryTemplateParams)
+           api.loadCodeTemplates(this.queryTemplateParams)
               .then(res => {
                 this.templateTableForm.count = res.data.count
                 this.templateTableForm.results = res.data.results
@@ -832,7 +836,7 @@ export default {
       }
 
       this.isLoading = true
-      api.saveFunctionCode(form)
+      api.saveDefinedBlock(form)
          .then(res => {
            this.isLoading = false
            if (res.status === 201) {
@@ -841,7 +845,7 @@ export default {
              this.functionName = ''
              this.$message.success('保存成功')
              this.updateInitInfo()
-             api.loadFunctionCodes(this.queryFunctionParams)
+             api.loadDefinedBlock(this.queryFunctionParams)
                 .then(res => {
                   this.functionTableForm.count = res.data.count
                   this.functionTableForm.results = res.data.results
@@ -878,14 +882,14 @@ export default {
         code: this.functionCode
       }
 
-      api.updateFunctionCode(form, this.currentEditedFunction.id)
+      api.updateDefinedBlock(form, this.currentEditedFunction.id)
          .then(res => {
            this.isShowFunctionCodeEditor = false
            this.functionCode = ''
            this.functionName = ''
            this.$message.success('保存成功')
            this.updateInitInfo()
-           api.loadFunctionCodes(this.queryFunctionParams)
+           api.loadDefinedBlock(this.queryFunctionParams)
               .then(res => {
                 this.functionTableForm.count = res.data.count
                 this.functionTableForm.results = res.data.results
