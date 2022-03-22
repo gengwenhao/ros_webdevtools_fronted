@@ -33,11 +33,11 @@
           </el-badge>
         </div>
 
-<!--        <div class="icon-con" @click="handleClearWorkspace">-->
-<!--          <el-tooltip class="item" effect="dark" content="清空工作区" placement="bottom-start">-->
-<!--            <i class="iconfont icon-act_qingkong"></i>-->
-<!--          </el-tooltip>-->
-<!--        </div>-->
+        <!--        <div class="icon-con" @click="handleClearWorkspace">-->
+        <!--          <el-tooltip class="item" effect="dark" content="清空工作区" placement="bottom-start">-->
+        <!--            <i class="iconfont icon-act_qingkong"></i>-->
+        <!--          </el-tooltip>-->
+        <!--        </div>-->
       </div>
 
       <div class="icon-group">
@@ -348,6 +348,7 @@ export default {
   computed: {
     queryProjectParams() {
       const form = {...this.projectTableForm}
+      form.solutionID = this.$route.query.solutionID
       delete form.results
       delete form.previous
       delete form.next
@@ -357,6 +358,7 @@ export default {
     },
     queryFunctionParams() {
       const form = {...this.functionTableForm}
+      form.solutionID = this.$route.query.solutionID
       delete form.results
       delete form.previous
       delete form.next
@@ -366,6 +368,7 @@ export default {
     },
     queryTemplateParams() {
       const form = {...this.templateTableForm}
+      form.solutionID = this.$route.query.solutionID
       delete form.results
       delete form.previous
       delete form.next
@@ -470,29 +473,37 @@ export default {
     // 更新页面初始数据
     updateInitInfo() {
       // 加载面板信息
-      api.getPanelInfo()
-         .then(res => {
-           this.panelInfo = res.data
-         })
+      api.getPanelInfo({
+        solutionID: this.$route.query.solutionID
+      }).then(res => {
+        this.panelInfo = res.data
+      })
 
       // 加载自定义函数
-      api.loadDefinedBlock({page: 1, page_size: settings.DEFAULT_USER_DEFINED_BLOCKS_NUMBER})
-         .then(res => {
-           this.allFunctionCodeList = res.data.results
-           this.initBlocklyWS()
-         })
+      api.loadDefinedBlock({
+        page: 1,
+        page_size: settings.DEFAULT_USER_DEFINED_BLOCKS_NUMBER,
+        solutionID: this.$route.query.solutionID
+      }).then(res => {
+        this.allFunctionCodeList = res.data.results
+        this.initBlocklyWS()
+      })
 
       // 加载自定义模板
-      api.loadCodeTemplates({page: 1, page_size: settings.DEFAULT_USER_DEFINED_TEMPLATE_NUMBER})
-         .then(res => {
-           this.allTemplateList = res.data.results
-         })
+      api.loadCodeTemplates({
+        page: 1,
+        page_size: settings.DEFAULT_USER_DEFINED_TEMPLATE_NUMBER,
+        solutionID: this.$route.query.solutionID
+      }).then(res => {
+        this.allTemplateList = res.data.results
+      })
 
       // 加载远程主机
-      api.loadRemoteMachines()
-         .then(res => {
-           this.allRemoteMachineList = res.data
-         })
+      api.loadRemoteMachines({
+        solutionID: this.$route.query.solutionID
+      }).then(res => {
+        this.allRemoteMachineList = res.data
+      })
     },
     // 保存项目代码
     saveProject: _.debounce(function (projectTitle) {
@@ -636,7 +647,7 @@ export default {
       }
 
       this.isLoading = true
-      api.saveCodeTemplate(form)
+      api.saveCodeTemplate(form, this.$route.query.solutionID)
          .then(res => {
            this.isLoading = false
            if (res.status === 201) {
@@ -836,7 +847,7 @@ export default {
       }
 
       this.isLoading = true
-      api.saveDefinedBlock(form)
+      api.saveDefinedBlock(form, this.$route.query.solutionID)
          .then(res => {
            this.isLoading = false
            if (res.status === 201) {

@@ -35,7 +35,7 @@ export const loadSolutionDetail = (params, id, config) => axios.get(`${HOST}/api
 export const deleteSolution = (params, id, config) => axios.delete(`${HOST}/api/solution/${id}/`, {...config, params})
 
 // 保存用户自定义编程模块
-export const saveDefinedBlock = (data) => axios.post(`${HOST}/api/defined_block/`, data)
+export const saveDefinedBlock = (data, solutionID) => axios.post(`${HOST}/api/defined_block/?solutionID=${solutionID}`, data)
 
 // 修改用户自定义编程模块
 export const updateDefinedBlock = (data, id) => axios.put(`${HOST}/api/defined_block/${id}/`, data)
@@ -50,7 +50,7 @@ export const deleteDefinedBlock = (params, id, config) => axios.delete(`${HOST}/
 })
 
 // 保存代码模板
-export const saveCodeTemplate = (data) => axios.post(`${HOST}/api/code_template/`, data)
+export const saveCodeTemplate = (data, solutionID) => axios.post(`${HOST}/api/code_template/?solutionID=${solutionID}`, data)
 
 // 修改代码模板
 export const updateCodeTemplate = (data, id) => axios.put(`${HOST}/api/code_template/${id}/`, data)

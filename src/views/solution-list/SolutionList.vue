@@ -8,10 +8,9 @@
           <el-table-column fixed="right" label="操作" width="300px" align="center">
             <template slot-scope="$scope">
               <el-button type="info" size="small"
-                         @click="$router.push({name: 'devPanel', query: {id: $scope.row.id}})">查看
+                         @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">查看
               </el-button>
-              <el-button type="primary" size="small">编辑</el-button>
-              <el-button type="danger" size="small">删除</el-button>
+              <el-button type="danger" size="small" @click="handleDeleteSolution($scope.row.id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -72,10 +71,25 @@ export default {
            this.isLoading = false
          })
     },
+
     // event
     handlePageChange(page) {
       this.form.page = page
       this.loadSolutions()
+    },
+    handleDeleteSolution(id) {
+      this.$confirm('是否永久删除该解决方案？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        api.deleteSolution({}, id)
+           .then(res => {
+             this.$message.success('删除成功')
+             this.loadSolutions()
+           })
+      })
+
     }
   },
   created() {
