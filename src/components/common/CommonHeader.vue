@@ -29,7 +29,8 @@ export default {
 
 #common-header {
   height: 50px;
-  background: $primary-color-dark;
+  //background: $primary-color-dark;
+  background: #333333;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;

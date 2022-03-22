@@ -9,11 +9,16 @@
 import CommonHeader from "@/components/common/CommonHeader"
 
 export default {
-  components: {CommonHeader}
+  components: {CommonHeader},
+  data() {
+    return {
+      transitionName: ''
+    }
+  }
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 
 * {
   box-sizing: border-box;
@@ -23,6 +28,7 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
 
 #app {
   font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
