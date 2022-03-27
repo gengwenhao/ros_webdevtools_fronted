@@ -17,6 +17,7 @@
         <!--          </el-tooltip>-->
         <!--        </div>-->
 
+
         <div class="icon-con" @click="isShowTemplatePanel = true">
           <el-badge :value="panelInfo.templateCnt">
             <el-tooltip class="item" effect="dark" content="新建代码生成模板" placement="bottom-start">
@@ -33,6 +34,23 @@
           </el-badge>
         </div>
 
+        <div class="icon-con" @click="updateSolution">
+          <el-tooltip class="item" effect="dark" content="保存代码" placement="bottom-start">
+            <i class="iconfont icon-baocun"></i>
+          </el-tooltip>
+        </div>
+
+        <div class="icon-con" @click="isShowPackagerPanel = true">
+          <el-tooltip class="item" effect="dark" content="生成代码" placement="bottom-start">
+            <i class="iconfont icon-dabaoxiazai"></i>
+          </el-tooltip>
+        </div>
+
+        <div class="icon-con" @click="isShowSendCodePanel = true">
+          <el-tooltip class="item" effect="dark" content="发送代码" placement="bottom-start">
+            <i class="iconfont icon-icon_sent"></i>
+          </el-tooltip>
+        </div>
         <!--        <div class="icon-con" @click="handleClearWorkspace">-->
         <!--          <el-tooltip class="item" effect="dark" content="清空工作区" placement="bottom-start">-->
         <!--            <i class="iconfont icon-act_qingkong"></i>-->
@@ -41,16 +59,7 @@
       </div>
 
       <div class="icon-group">
-        <div class="icon-con" @click="isShowSendCodePanel = true">
-          <el-tooltip class="item" effect="dark" content="发送代码并执行" placement="bottom-start">
-            <i class="iconfont icon-icon_sent"></i>
-          </el-tooltip>
-        </div>
-        <div class="icon-con" @click="isShowPackagerPanel = true">
-          <el-tooltip class="item" effect="dark" content="生成代码" placement="bottom-start">
-            <i class="iconfont icon-dabaoxiazai"></i>
-          </el-tooltip>
-        </div>
+
       </div>
     </div>
 
@@ -60,16 +69,6 @@
       <div id="blocklyDiv"></div>
       <!-- 工具箱中 -->
     </div>
-
-    <!-- 保存项目名称对话框 -->
-    <el-dialog center title="输入项目名称" :visible.sync="isShowInputProjectTitle">
-      <el-input clearable placeholder="项目名称" min="1" max="32" v-model="projectTitle"
-                @keydown.enter.native="handleConfirmProjectNameInput"/>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="handleCancelInputProjectTitle">取 消</el-button>
-        <el-button type="primary" @click="handleConfirmProjectNameInput">确 定</el-button>
-      </span>
-    </el-dialog>
 
     <!-- 创建自定义函数面板 -->
     <el-dialog center title="创建自定义函数" :visible.sync="isShowFunctionCodeAdder">
@@ -136,6 +135,13 @@
             </div>
           </el-select>
         </el-form-item>
+        <el-form-item label="自动运行">
+          <el-switch style="display: block"
+                     v-model="codeSenderForm.run"
+                     active-color="#13ce66"
+                     inactive-color="#ff4949">
+          </el-switch>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isShowSendCodePanel = false">取 消</el-button>
@@ -161,28 +167,6 @@
         <el-button @click="isShowPackagerPanel = false">取 消</el-button>
         <el-button type="primary" @click="handleConfirmGenerateCode">确 定</el-button>
       </span>
-    </el-dialog>
-
-    <!-- 项目列表 -->
-    <el-dialog center title="项目列表" :visible.sync="isShowOpenProjectPanel">
-      <el-table :data="projectTableForm.results" style="width: 100%;max-height: 400px;overflow-y: auto">
-        <el-table-column prop="title" align="center" label="名称"/>
-        <el-table-column prop="object_code_language" align="center" label="转换后的语言"/>
-        <el-table-column prop="add_time" align="center" label="添加时间"/>
-        <el-table-column prop="update_time" align="center" label="更新时间"/>
-        <el-table-column label="操作" align="center" width="200px">
-          <template slot-scope="scope">
-            <el-button type="primary" @click="handleImportProject(scope.row.id)">导入</el-button>
-            <el-button type="danger" @click="handleDeleteProject(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination layout="total, prev, pager, next, jumper"
-                     style="margin-top: 12px;"
-                     :current-page="projectTableForm.page"
-                     :total="projectTableForm.count"
-                     :page-size="5"
-                     @current-change="handleProjectTablePageChange"/>
     </el-dialog>
 
     <!--  自定义函数列表  -->
@@ -277,7 +261,8 @@ export default {
           wheel: false
         }
       },
-      isTest: false,
+      // 自动保存项目的定时器
+      timer: null,
 
       // 远程主机列表
       allRemoteMachineList: [],
@@ -333,8 +318,6 @@ export default {
       isShowPackagerPanel: false,
       isShowSendCodePanel: false,
       isShowOpenProjectPanel: false,
-      // 要保存的项目标题
-      projectTitle: '',
       // 自定义函数代码
       functionCode: null,
       // 函数名
@@ -342,7 +325,7 @@ export default {
       // 模板名称
       templateName: '',
       // 模板代码
-      templateCode: '#!/usr/bin/python3\n{{ __CODE__ }}',
+      templateCode: '{{ PYTHON_ENV }}\n{{ CODE }}',
     }
   },
   computed: {
@@ -505,38 +488,46 @@ export default {
         this.allRemoteMachineList = res.data
       })
     },
-    // 保存项目代码
-    saveProject: _.debounce(function (projectTitle) {
-      if (lib.isEmptyStr(this.code) || lib.isEmptyStr(projectTitle)) {
+    // 更新解决方案
+    updateSolution: _.debounce(function () {
+      if (lib.isEmptyStr(this.code)) {
         return -1
       }
 
-      const form = {
-        title: projectTitle,
+      api.updateSolutionDetail({
         code: lib.getBlocklyXMLText(this.blocklyWorkSpaceIns),
         object_code: this.code
+      }, this.$route.query.solutionID).then(res => {
+        this.$message.success('保存成功')
+      })
+    }, 1000),
+    // 保存解决方案
+    updateSolutionAuto() {
+      if (lib.isEmptyStr(this.code)) {
+        return -1
       }
 
-      this.isLoading = true
-      api.saveSolution(form)
+      api.updateSolutionDetail({
+        code: lib.getBlocklyXMLText(this.blocklyWorkSpaceIns),
+        object_code: this.code
+      }, this.$route.query.solutionID).then(res => {
+        this.$message.success('项目被自动保存')
+      })
+    },
+    // 加载解决方案
+    loadSolution() {
+      api.loadSolutionDetail({}, this.$route.query.solutionID)
          .then(res => {
-           this.isLoading = false
-           if (res.status === 201) {
-             this.$message.success('保存成功')
-             this.updateInitInfo()
-           } else {
-             this.$message.error('保存失败')
-           }
+           this.isShowOpenProjectPanel = false
+           this.isLoading = true
+           lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
+           setTimeout(() => {
+             this.isLoading = false
+             lib.blocklyXMLToDOM(res.data.code, this.blocklyWorkSpaceIns)
+             this.$message.success('导入成功')
+           }, 400)
          })
-         .catch(res => {
-           this.isLoading = false
-           if (res.response.data.title[0] === '具有 项目名称 的 Blockly项目 已存在。') {
-             this.$message.error('该项目名称已存在')
-           }
-         })
-
-      this.projectTitle = ''
-    }, 400),
+    },
 
     // 编辑自定义函数事件
     handleEditFunctionCode(data) {
@@ -593,26 +584,6 @@ export default {
                 .catch(() => {
                   this.templateTableForm.results = []
                 })
-           })
-      })
-    },
-    // 导入项目事件
-    handleImportProject(id) {
-      this.$confirm('导入前会清空工作环境，是否导入该项目？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        api.loadSolutionDetail({}, id)
-           .then(res => {
-             this.isShowOpenProjectPanel = false
-             this.isLoading = true
-             lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
-             setTimeout(() => {
-               this.isLoading = false
-               lib.blocklyXMLToDOM(res.data.code, this.blocklyWorkSpaceIns)
-               this.$message.success('导入成功')
-             }, 400)
            })
       })
     },
@@ -825,16 +796,6 @@ export default {
       this.templateCode = ''
       this.isShowTemplateEditor = false
     },
-    // 项目名称输入 取消事件
-    handleCancelInputProjectTitle() {
-      this.isShowInputProjectTitle = false
-      this.projectTitle = ''
-    },
-    // 项目名称输入 确认事件
-    handleConfirmProjectNameInput() {
-      this.isShowInputProjectTitle = false
-      this.saveProject(this.projectTitle)
-    },
     // 自定义函数添加 确认事件
     handleConfirmFunctionCodeAdder: _.debounce(function (functionName) {
       if (lib.isEmptyStr(this.functionCode) || lib.isEmptyStr(functionName)) {
@@ -915,18 +876,14 @@ export default {
       this.isShowFunctionCodeEditor = false
       this.functionName = ''
       this.functionCode = ''
-    },
-    // 保存代码按钮点击事件
-    handleClickSaveProject: _.debounce(function () {
-      if (this.code) {
-        this.isShowInputProjectTitle = true
-      } else {
-        this.$message.error('无法保存空的工作空间')
-      }
-    }, 400)
+    }
   },
   created() {
+    this.loadSolution()
     this.updateInitInfo()
+    this.timer = setInterval(() => {
+      this.updateSolutionAuto()
+    }, 1000 * 60)
   }
 }
 </script>

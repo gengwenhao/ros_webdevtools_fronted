@@ -31,6 +31,9 @@ export const loadSolutions = (params, config) => axios.get(`${HOST}/api/solution
 // 加载解决方案
 export const loadSolutionDetail = (params, id, config) => axios.get(`${HOST}/api/solution/${id}/`, {...config, params})
 
+// 修改解决方案
+export const updateSolutionDetail = (data, id) => axios.put(`${HOST}/api/solution/${id}/`, data)
+
 // 删除解决方案
 export const deleteSolution = (params, id, config) => axios.delete(`${HOST}/api/solution/${id}/`, {...config, params})
 
