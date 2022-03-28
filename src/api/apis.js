@@ -11,13 +11,13 @@ export const sendCode = (data) => axios.post(`${HOST}/api/send_code/`, data)
 export const loadRemoteMachines = (params, config) => axios.get(`${HOST}/api/remote_machine/`, {...config, params})
 
 // 添加远程机器
-export const saveRemoteMachine = (data) => axios.post(`${HOST}/api/remote_machine/`, data)
+export const saveRemoteMachine = (data, solutionID) => axios.post(`${HOST}/api/remote_machine/?solutionID=${solutionID}`, data)
 
 // 更新远程机器
-export const updateRemoteMachine = (data) => axios.put(`${HOST}/api/remote_machine/`, data)
+export const updateRemoteMachine = (data, id) => axios.put(`${HOST}/api/remote_machine/${id}/`, data)
 
 // 删除远程机器
-export const deleteRemoteMachine = (params, config) => axios.delete(`${HOST}/api/remote_machine/`, {...config, params})
+export const deleteRemoteMachine = (params, id, config) => axios.delete(`${HOST}/api/remote_machine/${id}/`, {...config, params})
 
 // 面板相关信息
 export const getPanelInfo = (params, config) => axios.get(`${HOST}/api/panel_info/`, {...config, params})

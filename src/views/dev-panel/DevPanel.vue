@@ -4,20 +4,6 @@
     <div class="icon-group-con">
       <div class="icon-group">
 
-        <!--        <div class="icon-con" @click="isShowOpenProjectPanel = true">-->
-        <!--          <el-badge :value="panelInfo.projectCnt">-->
-        <!--            <el-tooltip class="item" effect="dark" content="打开项目" placement="bottom-start">-->
-        <!--              <i class="iconfont icon-wenjianjia"></i>-->
-        <!--            </el-tooltip>-->
-        <!--          </el-badge>-->
-        <!--        </div>-->
-        <!--        <div class="icon-con" @click="handleClickSaveProject">-->
-        <!--          <el-tooltip class="item" effect="dark" content="保存项目" placement="bottom-start">-->
-        <!--            <i class="iconfont icon-baocun1"></i>-->
-        <!--          </el-tooltip>-->
-        <!--        </div>-->
-
-
         <div class="icon-con" @click="isShowTemplatePanel = true">
           <el-badge :value="panelInfo.templateCnt">
             <el-tooltip class="item" effect="dark" content="新建代码生成模板" placement="bottom-start">
@@ -30,6 +16,14 @@
           <el-badge :value="panelInfo.blocklyFunctionCnt">
             <el-tooltip class="item" effect="dark" content="新建自定义函数" placement="bottom-start">
               <i class="iconfont icon-chuangjianjiedian"></i>
+            </el-tooltip>
+          </el-badge>
+        </div>
+
+        <div class="icon-con" @click="isShowRemoteMachineListPanel = true">
+          <el-badge :value="panelInfo.remoteMachineCnt">
+            <el-tooltip class="item" effect="dark" content="新建机器人连接配置" placement="bottom-start">
+              <i class="iconfont icon-jiqiren"></i>
             </el-tooltip>
           </el-badge>
         </div>
@@ -51,11 +45,7 @@
             <i class="iconfont icon-icon_sent"></i>
           </el-tooltip>
         </div>
-        <!--        <div class="icon-con" @click="handleClearWorkspace">-->
-        <!--          <el-tooltip class="item" effect="dark" content="清空工作区" placement="bottom-start">-->
-        <!--            <i class="iconfont icon-act_qingkong"></i>-->
-        <!--          </el-tooltip>-->
-        <!--        </div>-->
+
       </div>
 
       <div class="icon-group">
@@ -70,10 +60,31 @@
       <!-- 工具箱中 -->
     </div>
 
+    <!-- 创建机器人连接配置面板 -->
+    <el-dialog center title="创建机器人连接配置" :visible.sync="isShowRemoteMachineAdder">
+      <el-form ref="form" :model="remoteMachineForm" label-width="110px">
+        <el-form-item label="配置名称">
+          <el-input size="mini" clearable placeholder="请输入配置名称" min="1" max="32" v-model="remoteMachineForm.name"/>
+        </el-form-item>
+        <el-form-item label="IP地址">
+          <el-input size="mini" clearable placeholder="请输入IP地址" min="1" max="32" v-model="remoteMachineForm.ip"/>
+        </el-form-item>
+        <el-form-item label="端口号">
+          <el-input size="mini" clearable placeholder="请输入端口号" min="1" max="32" v-model="remoteMachineForm.port"
+                    @keypress.enter.native="handleConfirmRemoteMachineAdder"/>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="handleCancelRemoteMachineAdder">取 消</el-button>
+        <el-button size="mini" type="primary" @click="handleConfirmRemoteMachineAdder">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <!-- 创建自定义函数面板 -->
     <el-dialog center title="创建自定义函数" :visible.sync="isShowFunctionCodeAdder">
-      <el-input size="mini" clearable placeholder="请输入函数名称" min="1" max="32" v-model="functionName"
-                style="margin-bottom: 4px"/>
+      <el-input size="mini" clearable placeholder="请输入函数名称" min="1" max="32" style="margin-bottom: 4px"
+                v-model="functionName"
+                @keypress.enter.native="handleConfirmFunctionCodeAdder"/>
       <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="functionCode"/>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="handleCancelFunctionCodeAdder">取 消</el-button>
@@ -81,10 +92,34 @@
       </span>
     </el-dialog>
 
+    <!-- 编辑机器人连接配置面板 -->
+    <el-dialog center title="编辑机器人连接配置" :visible.sync="isShowRemoteMachineEditor">
+      <el-form ref="form" label-width="110px">
+        <el-form-item label="配置名称">
+          <el-input size="mini" clearable placeholder="请输入配置名称" min="1" max="32"
+                    v-model="currentRemoteMachineName"/>
+        </el-form-item>
+        <el-form-item label="IP地址">
+          <el-input size="mini" clearable placeholder="请输入IP地址" min="1" max="32"
+                    v-model="currentRemoteMachineIP"/>
+        </el-form-item>
+        <el-form-item label="端口号">
+          <el-input size="mini" clearable placeholder="请输入端口号" min="1" max="32"
+                    v-model="currentRemoteMachinePort"
+                    @keypress.enter.native="handleConfirmRemoteMachineEditor"/>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="handleCancelRemoteMachineEditor">取 消</el-button>
+        <el-button size="mini" type="primary" @click="handleConfirmRemoteMachineEditor">确 定</el-button>
+      </span>
+    </el-dialog>
+
     <!-- 编辑自定义函数面板 -->
     <el-dialog center title="编辑函数" :visible.sync="isShowFunctionCodeEditor">
-      <el-input size="mini" clearable placeholder="请输入函数名称" min="1" max="32" v-model="functionName"
-                style="margin-bottom: 4px"/>
+      <el-input size="mini" clearable placeholder="请输入函数名称" min="1" max="32" style="margin-bottom: 4px"
+                v-model="functionName"
+                @keypress.enter.native="handleConfirmFunctionCodeEditor"/>
       <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="functionCode"/>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="handleCancelFunctionCodeEditor">取 消</el-button>
@@ -94,8 +129,9 @@
 
     <!-- 创建模板面板 -->
     <el-dialog center title="创建代码生成模板" :visible.sync="isShowTemplateAdder">
-      <el-input size="mini" clearable placeholder="请输入模板名称" min="1" max="32" v-model="templateName"
-                style="margin-bottom: 4px"/>
+      <el-input size="mini" clearable placeholder="请输入模板名称" min="1" max="32" style="margin-bottom: 4px"
+                v-model="templateName"
+                @keypress.enter.native="handleSaveGenerateTemplate"/>
       <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="templateCode"/>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="isShowTemplateAdder = false">取 消</el-button>
@@ -105,8 +141,9 @@
 
     <!-- 编辑模板面板 -->
     <el-dialog center title="编辑代码生成模板" :visible.sync="isShowTemplateEditor">
-      <el-input size="mini" clearable placeholder="请输入模板名称" min="1" max="32" v-model="templateName"
-                style="margin-bottom: 4px"/>
+      <el-input size="mini" clearable placeholder="请输入模板名称" min="1" max="32" style="margin-bottom: 4px"
+                v-model="templateName"
+                @keypress.enter.native="handleConfirmUpdateTemplate"/>
       <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="templateCode"/>
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="handleCancelUpdateTemplate">取 消</el-button>
@@ -159,7 +196,6 @@
                          :label="item.name"
                          :value="item.id"/>
             </div>
-
           </el-select>
         </el-form-item>
       </el-form>
@@ -167,6 +203,32 @@
         <el-button @click="isShowPackagerPanel = false">取 消</el-button>
         <el-button type="primary" @click="handleConfirmGenerateCode">确 定</el-button>
       </span>
+    </el-dialog>
+
+    <!--  机器人连接配置列表  -->
+    <el-dialog center title="机器人连接配置列表" :visible.sync="isShowRemoteMachineListPanel">
+      <el-button style="margin-bottom: 23px" type="primary" icon="el-icon-plus"
+                 @click="isShowRemoteMachineAdder = true">添加新机器人连接配置
+      </el-button>
+      <el-table :data="remoteMachineTableForm.results" style="width: 100%;max-height: 400px;overflow-y: auto">
+        <el-table-column prop="name" align="center" label="机器人名称"/>
+        <el-table-column prop="ip" align="center" label="IP"/>
+        <el-table-column prop="port" align="center" label="端口"/>
+        <el-table-column prop="add_time" align="center" label="添加时间"/>
+        <el-table-column prop="update_time" align="center" label="更新时间"/>
+        <el-table-column label="操作" align="center" width="200px">
+          <template slot-scope="scope">
+            <el-button type="primary" @click="handleEditRemoteMachine(scope.row)">编辑</el-button>
+            <el-button type="danger" @click="handleDeleteRemoteMachine(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination layout="total, prev, pager, next, jumper"
+                     style="margin-top: 12px;"
+                     :current-page="remoteMachineTableForm.page"
+                     :total="remoteMachineTableForm.count"
+                     :page-size="5"
+                     @current-change="handleRemoteMachineTablePageChanged"/>
     </el-dialog>
 
     <!--  自定义函数列表  -->
@@ -270,11 +332,13 @@ export default {
       allTemplateList: [],
       currentEditedFunction: null,
       currentEditedTemplate: null,
+      currentEditedRemoteMachine: null,
       // 面板信息
       panelInfo: {
         templateCnt: 0,
         projectCnt: 0,
-        blocklyFunctionCnt: 0
+        blocklyFunctionCnt: 0,
+        remoteMachineCnt: 0
       },
       // 自定义函数
       functionCodeList: [],
@@ -298,9 +362,19 @@ export default {
         remote_machine: null,
         run: true
       },
+      remoteMachineForm: {
+        name: '',
+        ip: '',
+        port: ''
+      },
       functionTableForm: {
         page: 1,
         count: 1,
+        results: []
+      },
+      remoteMachineTableForm: {
+        page: 1,
+        count: 0,
         results: []
       },
       // loading flag
@@ -308,11 +382,14 @@ export default {
       isTemplateSearchLoading: false,
       // show flag
       isShowInputProjectTitle: false,
+      isShowRemoteMachineAdder: false,
+      isShowRemoteMachineEditor: false,
       isShowFunctionCodeAdder: false,
       isShowFunctionCodeEditor: false,
       isShowTemplateAdder: false,
       isShowTemplateEditor: false,
       isShowFunctionCodeListPanel: false,
+      isShowRemoteMachineListPanel: false,
       isShowTemplateListPanel: false,
       isShowTemplatePanel: false,
       isShowPackagerPanel: false,
@@ -324,6 +401,10 @@ export default {
       functionName: '',
       // 模板名称
       templateName: '',
+      // 当前编辑的机器人信息
+      currentRemoteMachineName: '',
+      currentRemoteMachineIP: '',
+      currentRemoteMachinePort: '',
       // 模板代码
       templateCode: '{{ PYTHON_ENV }}\n{{ CODE }}',
     }
@@ -349,6 +430,16 @@ export default {
 
       return form
     },
+    queryRemoteMachineParams() {
+      const form = {...this.remoteMachineTableForm}
+      form.solutionID = this.$route.query.solutionID
+      delete form.results
+      delete form.previous
+      delete form.next
+      delete form.count
+
+      return form
+    },
     queryTemplateParams() {
       const form = {...this.templateTableForm}
       form.solutionID = this.$route.query.solutionID
@@ -361,6 +452,19 @@ export default {
     }
   },
   watch: {
+    isShowRemoteMachineListPanel(val) {
+      if (val === true) {
+        this.remoteMachineTableForm.page = 1
+        api.loadRemoteMachines(this.queryRemoteMachineParams)
+           .then(res => {
+             this.remoteMachineTableForm.count = res.data.count
+             this.remoteMachineTableForm.results = res.data.results
+           })
+           .catch(() => {
+             this.remoteMachineTableForm.results = []
+           })
+      }
+    },
     isShowOpenProjectPanel(val) {
       if (val === true) {
         this.projectTableForm.page = 1
@@ -483,9 +587,11 @@ export default {
 
       // 加载远程主机
       api.loadRemoteMachines({
+        page: 1,
+        page_size: settings.DEFAULT_REMOTE_MACHINE_NUMBER,
         solutionID: this.$route.query.solutionID
       }).then(res => {
-        this.allRemoteMachineList = res.data
+        this.allRemoteMachineList = res.data.results
       })
     },
     // 更新解决方案
@@ -501,7 +607,7 @@ export default {
         this.$message.success('保存成功')
       })
     }, 1000),
-    // 保存解决方案
+    // 自动更新解决方案
     updateSolutionAuto() {
       if (lib.isEmptyStr(this.code)) {
         return -1
@@ -529,12 +635,42 @@ export default {
          })
     },
 
+    // 编辑机器人连接配置事件
+    handleEditRemoteMachine(data) {
+      this.isShowRemoteMachineEditor = true
+      this.currentRemoteMachineName = data.name
+      this.currentRemoteMachineIP = data.ip
+      this.currentRemoteMachinePort = data.port
+      this.currentEditedRemoteMachine = data
+    },
+    // 删除机器人连接配置事件
+    handleDeleteRemoteMachine(id) {
+      this.$confirm('是否永久删除该机器人连接配置？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        api.deleteRemoteMachine({}, id)
+           .then(res => {
+             this.$message.success('连接配置已移除')
+             this.updateInitInfo()
+             api.loadRemoteMachines(this.queryRemoteMachineParams)
+                .then(res => {
+                  this.remoteMachineTableForm.count = res.data.count
+                  this.remoteMachineTableForm.results = res.data.results
+                })
+                .catch(() => {
+                  this.remoteMachineTableForm.results = []
+                })
+           })
+      })
+    },
     // 编辑自定义函数事件
     handleEditFunctionCode(data) {
       this.isShowFunctionCodeEditor = true
       this.functionName = data.name
       this.functionCode = data.code
-      this.currentEditedFunction = data
+      this.currentEditedRemoteMachine = data
     },
     // 删除自定义函数事件
     handleDeleteFunctionCode(id) {
@@ -583,25 +719,6 @@ export default {
                 })
                 .catch(() => {
                   this.templateTableForm.results = []
-                })
-           })
-      })
-    },
-    // 删除项目事件
-    handleDeleteProject(id) {
-      this.$confirm('是否永久删除该项目？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        api.deleteSolution({}, id)
-           .then(() => {
-             this.$message.success('删除成功')
-             this.updateInitInfo()
-             api.loadSolutions(this.queryProjectParams)
-                .then(res => {
-                  res.data.page = this.projectTableForm.page
-                  this.projectTableForm = res.data
                 })
            })
       })
@@ -680,6 +797,18 @@ export default {
          })
          .catch(() => {
            this.functionTableForm.results = []
+         })
+    },
+    // 远程机器人列表页码变换事件
+    handleRemoteMachineTablePageChanged(page) {
+      this.remoteMachineTableForm.page = page
+      api.loadRemoteMachines(this.queryRemoteMachineParams)
+         .then(res => {
+           this.remoteMachineTableForm.count = res.data.count
+           this.remoteMachineTableForm.results = res.data.results
+         })
+         .catch(() => {
+           this.remoteMachineTableForm.results = []
          })
     },
     // 自定义函数列表页码变换事件
@@ -876,6 +1005,84 @@ export default {
       this.isShowFunctionCodeEditor = false
       this.functionName = ''
       this.functionCode = ''
+    },
+    // 机器人连接配置添加 确认事件
+    handleConfirmRemoteMachineAdder: _.debounce(function () {
+      if (lib.isEmptyStr(this.remoteMachineForm.name) ||
+          lib.isEmptyStr(this.remoteMachineForm.ip) ||
+          lib.isEmptyStr(this.remoteMachineForm.port)) {
+        return -1
+      }
+
+      api.saveRemoteMachine(this.remoteMachineForm, this.$route.query.solutionID)
+         .then(res => {
+           this.remoteMachineForm = {
+             name: '',
+             ip: '',
+             port: ''
+           }
+           this.isShowRemoteMachineAdder = false
+           this.$message.success('保存成功')
+           this.updateInitInfo()
+           api.loadRemoteMachines(this.queryRemoteMachineParams)
+              .then(res => {
+                this.remoteMachineTableForm.count = res.data.count
+                this.remoteMachineTableForm.results = res.data.results
+              })
+              .catch(() => {
+                this.remoteMachineTableForm.results = []
+              })
+         })
+    }, 400),
+    // 机器人连接配置添加 取消事件
+    handleCancelRemoteMachineAdder() {
+      this.remoteMachineForm = {
+        name: '',
+        ip: '',
+        port: ''
+      }
+      this.isShowRemoteMachineAdder = false
+    },
+    // 机器人连接配置编辑 确认事件
+    handleConfirmRemoteMachineEditor: _.debounce(function () {
+      if (lib.isEmptyStr(this.currentRemoteMachineName) ||
+          lib.isEmptyStr(this.currentRemoteMachineIP) ||
+          lib.isEmptyStr(this.currentRemoteMachinePort)) {
+        return -1
+      }
+
+      const form = {
+        name: this.currentRemoteMachineName,
+        ip: this.currentRemoteMachineIP,
+        port: this.currentRemoteMachinePort
+      }
+
+      api.updateRemoteMachine(form, this.currentEditedRemoteMachine.id)
+         .then(res => {
+           this.isShowRemoteMachineEditor = false
+           this.currentRemoteMachineName = ''
+           this.currentRemoteMachineIP = ''
+           this.currentRemoteMachinePort = ''
+           this.$message.success('配置已更新')
+           this.updateInitInfo()
+           api.loadRemoteMachines(this.queryRemoteMachineParams)
+              .then(res => {
+                this.remoteMachineTableForm.count = res.data.count
+                this.remoteMachineTableForm.results = res.data.results
+              })
+              .catch(() => {
+                this.remoteMachineTableForm.results = []
+              })
+         })
+    }, 400),
+    // 机器人连接配置 取消事件
+    handleCancelRemoteMachineEditor() {
+      this.isShowRemoteMachineEditor = false
+      this.currentEditedRemoteMachine = {
+        name: '',
+        ip: '',
+        port: ''
+      }
     }
   },
   created() {
@@ -883,7 +1090,7 @@ export default {
     this.updateInitInfo()
     this.timer = setInterval(() => {
       this.updateSolutionAuto()
-    }, 1000 * 60)
+    }, 1000 * 60 * 2) // 2分钟自动保存一次
   }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div id="common-header">
     <div class="inner-con">
-      <div class="title">
+      <div class="title" @click="$router.push({name: 'solutionList'})">
         ROS WEB DEVTOOLS
       </div>
       <div class="tools">

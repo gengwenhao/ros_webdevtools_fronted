@@ -1,11 +1,14 @@
 <template>
   <div id="solution-list" v-loading="isLoading">
+    <!-- 解决方案表格容器 -->
     <div class="con" v-show="!isLoading">
-      <el-card v-if="solutionList && solutionList.length > 0"
-               :style="{padding: '23px', maxWidth: '1024px', width: 'calc(100vw - 400px)', height: 'calc(100vh - 100px)', margin: 'auto'}">
-        <el-table size="medium" border :data="solutionList" :style="{height: 'calc(100vh - 200px)'}">
+      <div v-if="solutionList && solutionList.length > 0"
+           :style="{padding: '23px', width: 'calc(100vw - 100px)', height: 'calc(100vh - 100px)', margin: 'auto'}">
+        <el-button type="primary" :style="{marginBottom: '12px'}" @click="isShowSolutionAdderPanel = true">创建新的解决方案
+        </el-button>
+        <el-table size="small" border :data="solutionList" height="90%">
           <el-table-column prop="title" label="名称" align="center"/>
-          <el-table-column fixed="right" label="操作" width="300px" align="center">
+          <el-table-column fixed="right" label="操作" align="center">
             <template slot-scope="$scope">
               <el-button type="info" size="small"
                          @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">查看
@@ -20,8 +23,8 @@
                        :total="form.count"
                        :page-size="15"
                        @current-change="handlePageChange"/>
-      </el-card>
-      <div class="tips" v-else>
+      </div>
+      <div class="tips" v-else @click="isShowSolutionAdderPanel = true">
         <h1>No solution is available</h1>
         <svg t="1647952913452" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
              p-id="5602" width="200" height="200">
@@ -32,11 +35,23 @@
         </svg>
       </div>
     </div>
+
+    <!-- 创建解决方案面板 -->
+    <el-dialog center title="创建新的解决方案" :visible.sync="isShowSolutionAdderPanel">
+      <el-input size="mini" clearable placeholder="请输入解决方案名称" min="1" max="32" style="margin-bottom: 4px"
+                v-model="newSolutionName"
+                @keypress.enter.native="handleConfirmSolutionCodeAdder"/>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="handleCancelSolutionAdder">取 消</el-button>
+        <el-button size="mini" type="primary" @click="handleConfirmSolutionCodeAdder">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import api from '@/api'
+import lib from '@/lib'
 import settings from '@/settings'
 
 export default {
@@ -45,6 +60,7 @@ export default {
     return {
       // flag
       isLoading: false,
+      isShowSolutionAdderPanel: false,
       // res
       solutionList: [],
       // form
@@ -52,7 +68,8 @@ export default {
         page: 1,
         pageSize: settings.DEFAULT_SOLUTION_LIST_PAGE_SIZE,
         count: 0
-      }
+      },
+      newSolutionName: ''
     }
   },
   methods: {
@@ -89,7 +106,22 @@ export default {
              this.loadSolutions()
            })
       })
+    },
+    handleCancelSolutionAdder() {
+      this.newSolutionName = ''
+      this.isShowSolutionAdderPanel = false
+    },
+    handleConfirmSolutionCodeAdder() {
+      if (lib.isEmptyStr(this.newSolutionName)) {
+        return -1
+      }
 
+      api.saveSolution({title: this.newSolutionName}).then(res => {
+        this.$message.success('添加成功')
+        this.newSolutionName = ''
+        this.isShowSolutionAdderPanel = false
+        this.loadSolutions()
+      })
     }
   },
   created() {
