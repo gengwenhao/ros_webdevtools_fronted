@@ -10,10 +10,12 @@
           <el-table-column prop="title" label="名称" align="center"/>
           <el-table-column fixed="right" label="操作" align="center">
             <template slot-scope="$scope">
-              <el-button type="info" size="small"
-                         @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">查看
+              <el-button type="info" size="small" plain icon="el-icon-warning-outline"
+                         @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">进入解决方案
               </el-button>
-              <el-button type="danger" size="small" @click="handleDeleteSolution($scope.row.id)">删除</el-button>
+              <el-button type="danger" size="small" plain icon="el-icon-delete"
+                         @click="handleDeleteSolution($scope.row.id)">删除该方案
+              </el-button>
             </template>
           </el-table-column>
         </el-table>

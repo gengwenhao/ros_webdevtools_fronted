@@ -153,7 +153,10 @@
 
     <!-- 发送代码对话框 -->
     <el-dialog center title="请选择生成参数" :visible.sync="isShowSendCodePanel">
-      <el-form ref="form" :model="codeSenderForm" label-width="110px">
+      <el-form ref="form" :model="codeSenderForm" :inline="true" label-width="110px">
+        <el-form-item label="脚本名称">
+          <el-input placeholder="输入脚本名称" v-model="codeSenderForm.name"/>
+        </el-form-item>
         <el-form-item label="代码生成模板">
           <el-select placeholder="请选择模板" v-model="codeSenderForm.templateID">
             <div v-if="allTemplateList && allTemplateList.length > 0">
@@ -360,7 +363,8 @@ export default {
       codeSenderForm: {
         templateID: null,
         remote_machine: null,
-        run: true
+        run: true,
+        name: null
       },
       remoteMachineForm: {
         name: '',
@@ -831,7 +835,7 @@ export default {
       }
 
       this.$message.warning(`连接主机中`)
-      const form = Object.assign({code: this.code}, this.codeSenderForm)
+      const form = Object.assign({code: this.code, solutionID: this.$route.query.solutionID}, this.codeSenderForm)
       api.sendCode(form)
          .then(({data}) => {
            switch (data.status) {
