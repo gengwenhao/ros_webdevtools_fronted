@@ -3,7 +3,6 @@
     <!-- 按钮组 -->
     <div class="icon-group-con">
       <div class="icon-group">
-
         <div class="icon-con" @click="isShowTemplatePanel = true">
           <el-badge :value="panelInfo.templateCnt">
             <el-tooltip class="item" effect="dark" content="新建代码生成模板" placement="bottom-start">
@@ -28,6 +27,7 @@
           </el-badge>
         </div>
 
+
         <div class="icon-con" @click="updateSolution">
           <el-tooltip class="item" effect="dark" content="保存代码" placement="bottom-start">
             <i class="iconfont icon-baocun"></i>
@@ -46,6 +46,11 @@
           </el-tooltip>
         </div>
 
+        <div class="icon-con">
+          <el-tooltip class="item" effect="dark" content="打开终端" placement="bottom-start">
+            <i class="iconfont icon-terminal"></i>
+          </el-tooltip>
+        </div>
       </div>
 
       <div class="icon-group">
@@ -154,10 +159,10 @@
     <!-- 发送代码对话框 -->
     <el-dialog center title="请选择生成参数" :visible.sync="isShowSendCodePanel">
       <el-form ref="form" :model="codeSenderForm" :inline="true" label-width="110px">
-        <el-form-item label="脚本名称">
+        <el-form-item label="脚本名称" required>
           <el-input placeholder="输入脚本名称" v-model="codeSenderForm.name"/>
         </el-form-item>
-        <el-form-item label="代码生成模板">
+        <el-form-item label="代码生成模板" required>
           <el-select placeholder="请选择模板" v-model="codeSenderForm.templateID">
             <div v-if="allTemplateList && allTemplateList.length > 0">
               <el-option v-for="(item, idx) in allTemplateList" :key="item.id"
@@ -166,7 +171,7 @@
             </div>
           </el-select>
         </el-form-item>
-        <el-form-item label="远程主机">
+        <el-form-item label="远程主机" required>
           <el-select placeholder="请选择设备" v-model="codeSenderForm.remote_machine">
             <div v-if="allRemoteMachineList && allRemoteMachineList.length > 0">
               <el-option v-for="(item, idx) in allRemoteMachineList" :key="item.id"
@@ -834,6 +839,17 @@ export default {
         return -1
       }
 
+      if (lib.isEmptyStr(this.codeSenderForm.name)) {
+        this.$message.warning('请检查脚本名称')
+        return -1
+      } else if (!this.codeSenderForm.templateID) {
+        this.$message.warning('请检查选择的模板')
+        return -1
+      } else if (!this.codeSenderForm.remote_machine) {
+        this.$message.warning('请检查远程机器')
+        return -1
+      }
+
       this.$message.warning(`连接主机中`)
       const form = Object.assign({code: this.code, solutionID: this.$route.query.solutionID}, this.codeSenderForm)
       api.sendCode(form)
@@ -869,7 +885,7 @@ export default {
         return -1
       }
 
-      const form = Object.assign({code: this.code}, this.templateAdderForm)
+      const form = Object.assign({code: this.code}, this.templateAdderForm);
       api.generateCode(form)
           .then(res => {
             if (res.data.timestamp) {

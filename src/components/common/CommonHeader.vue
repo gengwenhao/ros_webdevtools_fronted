@@ -1,13 +1,16 @@
 <template>
   <div id="common-header">
     <div class="inner-con">
+      <div class="logo">
+        <img src="@/assets/robot-line.png"/>
+      </div>
       <div class="title" @click="$router.push({name: 'solutionList'})">
         ROS WEB DEVTOOLS
       </div>
       <div class="tools">
-<!--        <el-button round type="primary" v-if="!isConnected" @click="isConnected = true">Connect</el-button>-->
-<!--        <el-button round icon="el-icon-connection" type="warning" v-else @click="isConnected = false">Connected-->
-<!--        </el-button>-->
+        <!--        <el-button round type="primary" v-if="!isConnected" @click="isConnected = true">Connect</el-button>-->
+        <!--        <el-button round icon="el-icon-connection" type="warning" v-else @click="isConnected = false">Connected-->
+        <!--        </el-button>-->
       </div>
     </div>
   </div>
@@ -50,9 +53,22 @@ export default {
     flex-direction: row;
     justify-content: space-between;
 
+    .logo {
+      height: 50px;
+      line-height: 50px;
+      width: auto;
+
+      img {
+        width: auto;
+        height: 30px;
+        margin-top: 8px;
+      }
+    }
+
     .title {
       display: flex;
       align-items: center;
+      text-indent: 12px;
     }
 
     .tools {
