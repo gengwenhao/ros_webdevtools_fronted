@@ -46,11 +46,11 @@
           </el-tooltip>
         </div>
 
-        <div class="icon-con">
-          <el-tooltip class="item" effect="dark" content="打开终端" placement="bottom-start">
-            <i class="iconfont icon-terminal"></i>
-          </el-tooltip>
-        </div>
+        <!--        <div class="icon-con" @click="handleOpenTerm">-->
+        <!--          <el-tooltip class="item" effect="dark" content="打开终端" placement="bottom-start">-->
+        <!--            <i class="iconfont icon-terminal"></i>-->
+        <!--          </el-tooltip>-->
+        <!--        </div>-->
       </div>
 
       <div class="icon-group">
@@ -76,6 +76,19 @@
         </el-form-item>
         <el-form-item label="端口号">
           <el-input size="mini" clearable placeholder="请输入端口号" min="1" max="32" v-model="remoteMachineForm.port"
+                    @keypress.enter.native="handleConfirmRemoteMachineAdder"/>
+        </el-form-item>
+        <el-form-item label="SSH端口号">
+          <el-input size="mini" clearable placeholder="请输入SSH端口号" min="1" max="32" v-model="remoteMachineForm.ssh_port"
+                    @keypress.enter.native="handleConfirmRemoteMachineAdder"/>
+        </el-form-item>
+        <el-form-item label="SSH用户名">
+          <el-input size="mini" clearable placeholder="请输入SSH用户名" min="1" max="32" v-model="remoteMachineForm.ssh_user"
+                    @keypress.enter.native="handleConfirmRemoteMachineAdder"/>
+        </el-form-item>
+        <el-form-item label="SSH密码">
+          <el-input size="mini" clearable type="password" placeholder="请输入SSH密码" min="1" max="32"
+                    v-model="remoteMachineForm.ssh_password"
                     @keypress.enter.native="handleConfirmRemoteMachineAdder"/>
         </el-form-item>
       </el-form>
@@ -111,6 +124,21 @@
         <el-form-item label="端口号">
           <el-input size="mini" clearable placeholder="请输入端口号" min="1" max="32"
                     v-model="currentRemoteMachinePort"
+                    @keypress.enter.native="handleConfirmRemoteMachineEditor"/>
+        </el-form-item>
+        <el-form-item label="SSH端口号">
+          <el-input size="mini" clearable placeholder="请输入SSH端口号" min="1" max="32"
+                    v-model="currentRemoteSSHPort"
+                    @keypress.enter.native="handleConfirmRemoteMachineEditor"/>
+        </el-form-item>
+        <el-form-item label="SSH用户名">
+          <el-input size="mini" clearable placeholder="请输入SSH用户名" min="1" max="32"
+                    v-model="currentRemoteSSHUser"
+                    @keypress.enter.native="handleConfirmRemoteMachineEditor"/>
+        </el-form-item>
+        <el-form-item label="SSH密码">
+          <el-input size="mini" clearable type="password" placeholder="请输入SSH密码" min="1" max="32"
+                    v-model="currentRemoteSSHPassword"
                     @keypress.enter.native="handleConfirmRemoteMachineEditor"/>
         </el-form-item>
       </el-form>
@@ -224,8 +252,9 @@
         <el-table-column prop="port" align="center" label="端口"/>
         <el-table-column prop="add_time" align="center" label="添加时间"/>
         <el-table-column prop="update_time" align="center" label="更新时间"/>
-        <el-table-column label="操作" align="center" width="200px">
+        <el-table-column label="操作" align="center" width="250px">
           <template slot-scope="scope">
+            <el-button type="primary" @click="handleOpenTerm(scope.row)">连接SSH</el-button>
             <el-button type="primary" @click="handleEditRemoteMachine(scope.row)">编辑</el-button>
             <el-button type="danger" @click="handleDeleteRemoteMachine(scope.row.id)">删除</el-button>
           </template>
@@ -372,9 +401,12 @@ export default {
         name: null
       },
       remoteMachineForm: {
-        name: '',
-        ip: '',
-        port: ''
+        name: '默认配置',
+        ip: 'localhost',
+        port: '8888',
+        ssh_port: '22',
+        ssh_user: 'root',
+        ssh_password: ''
       },
       functionTableForm: {
         page: 1,
@@ -414,6 +446,9 @@ export default {
       currentRemoteMachineName: '',
       currentRemoteMachineIP: '',
       currentRemoteMachinePort: '',
+      currentRemoteSSHPort: '',
+      currentRemoteSSHUser: '',
+      currentRemoteSSHPassword: '',
       // 模板代码
       templateCode: '{{ PYTHON_ENV }}\n{{ CODE }}',
     }
@@ -517,6 +552,10 @@ export default {
   methods: {
     printInfo(data) {
       console.log(data)
+    },
+    handleOpenTerm(data) {
+      // this.$router.push({name: 'commandPanel', query: {solutionID: this.$route.query.solutionID}})
+      window.open(`/command-panel?id=${data.id}`, '_blank')
     },
     // 初始化 blockly 工作空间
     initBlocklyWS() {
@@ -650,6 +689,9 @@ export default {
       this.currentRemoteMachineName = data.name
       this.currentRemoteMachineIP = data.ip
       this.currentRemoteMachinePort = data.port
+      this.currentRemoteSSHPort = data.ssh_port
+      this.currentRemoteSSHUser = data.ssh_user
+      this.currentRemoteSSHPassword = data.ssh_password
       this.currentEditedRemoteMachine = data
     },
     // 删除机器人连接配置事件
@@ -1030,16 +1072,22 @@ export default {
     handleConfirmRemoteMachineAdder: _.debounce(function () {
       if (lib.isEmptyStr(this.remoteMachineForm.name) ||
           lib.isEmptyStr(this.remoteMachineForm.ip) ||
-          lib.isEmptyStr(this.remoteMachineForm.port)) {
+          lib.isEmptyStr(this.remoteMachineForm.port) ||
+          lib.isEmptyStr(this.remoteMachineForm.ssh_port) ||
+          lib.isEmptyStr(this.remoteMachineForm.ssh_user) ||
+          lib.isEmptyStr(this.remoteMachineForm.ssh_password)) {
         return -1
       }
 
       api.saveRemoteMachine(this.remoteMachineForm, this.$route.query.solutionID)
           .then(res => {
             this.remoteMachineForm = {
-              name: '',
-              ip: '',
-              port: ''
+              name: '默认配置',
+              ip: 'localhost',
+              port: '8888',
+              ssh_port: '22',
+              ssh_user: 'root',
+              ssh_password: ''
             }
             this.isShowRemoteMachineAdder = false
             this.$message.success('保存成功')
@@ -1052,6 +1100,10 @@ export default {
                 .catch(() => {
                   this.remoteMachineTableForm.results = []
                 })
+          })
+          .catch(err => {
+            console.log(err.response)
+            this.$message.warning(err.response.data.name[0] === '具有 名称 的 远程机器 已存在。' ? '该名称已存在' : '请见检查提交的数据')
           })
     }, 400),
     // 机器人连接配置添加 取消事件
@@ -1067,14 +1119,20 @@ export default {
     handleConfirmRemoteMachineEditor: _.debounce(function () {
       if (lib.isEmptyStr(this.currentRemoteMachineName) ||
           lib.isEmptyStr(this.currentRemoteMachineIP) ||
-          lib.isEmptyStr(this.currentRemoteMachinePort)) {
+          lib.isEmptyStr(this.currentRemoteMachinePort) ||
+          lib.isEmptyStr(this.currentRemoteSSHUser) ||
+          lib.isEmptyStr(this.currentRemoteSSHPort) ||
+          lib.isEmptyStr(this.currentRemoteSSHPassword)) {
         return -1
       }
 
       const form = {
         name: this.currentRemoteMachineName,
         ip: this.currentRemoteMachineIP,
-        port: this.currentRemoteMachinePort
+        port: this.currentRemoteMachinePort,
+        ssh_port: this.currentRemoteSSHPort,
+        ssh_user: this.currentRemoteSSHUser,
+        ssh_password: this.currentRemoteSSHPassword
       }
 
       api.updateRemoteMachine(form, this.currentEditedRemoteMachine.id)
@@ -1083,6 +1141,9 @@ export default {
             this.currentRemoteMachineName = ''
             this.currentRemoteMachineIP = ''
             this.currentRemoteMachinePort = ''
+            this.currentRemoteSSHPort = ''
+            this.currentRemoteSSHUser = ''
+            this.currentRemoteSSHPassword = ''
             this.$message.success('配置已更新')
             this.updateInitInfo()
             api.loadRemoteMachines(this.queryRemoteMachineParams)
@@ -1098,11 +1159,12 @@ export default {
     // 机器人连接配置 取消事件
     handleCancelRemoteMachineEditor() {
       this.isShowRemoteMachineEditor = false
-      this.currentEditedRemoteMachine = {
-        name: '',
-        ip: '',
-        port: ''
-      }
+      this.currentRemoteMachineName = ''
+      this.currentRemoteMachineIP = ''
+      this.currentRemoteMachinePort = ''
+      this.currentRemoteSSHPort = ''
+      this.currentRemoteSSHUser = ''
+      this.currentRemoteSSHPassword = ''
     }
   },
   created() {
