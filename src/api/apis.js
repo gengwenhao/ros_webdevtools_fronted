@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const HOST = 'http://localhost:8000'
-// const HOST = 'http://192.168.1.105:8000'
+// const HOST = 'http://localhost:8000'
+const HOST = 'http://192.168.31.33:8000'
 // const HOST = ''
 
 // 发送代码到远程机器
@@ -17,7 +17,10 @@ export const saveRemoteMachine = (data, solutionID) => axios.post(`${HOST}/api/r
 export const updateRemoteMachine = (data, id) => axios.put(`${HOST}/api/remote_machine/${id}/`, data)
 
 // 删除远程机器
-export const deleteRemoteMachine = (params, id, config) => axios.delete(`${HOST}/api/remote_machine/${id}/`, {...config, params})
+export const deleteRemoteMachine = (params, id, config) => axios.delete(`${HOST}/api/remote_machine/${id}/`, {
+  ...config,
+  params
+})
 
 // 面板相关信息
 export const getPanelInfo = (params, config) => axios.get(`${HOST}/api/panel_info/`, {...config, params})
