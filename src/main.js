@@ -1,11 +1,12 @@
 // import module
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router'
-import store from './store'
 import SuiVue from 'semantic-ui-vue'
 import ElementUI from 'element-ui'
 import Toast from "vue-toastification"
+import bus from '@/lib/bus'
+import router from '@/router'
+import store from '@/store'
 // import css
 import 'semantic-ui-css/semantic.min.css'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -21,6 +22,9 @@ Vue.config.ignoredElements.push('sep')
 Vue.config.ignoredElements.push('value')
 Vue.config.ignoredElements.push('statement')
 Vue.config.ignoredElements.push('mutation')
+
+// defined this.$
+Object.defineProperty(Vue.prototype, '$bus', bus)
 
 // vue use
 Vue.use(SuiVue)

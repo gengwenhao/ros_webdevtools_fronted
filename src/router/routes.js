@@ -5,13 +5,13 @@ import CommandPanel from "@/views/command-panel/CommandPanel";
 export default [
   {
     path: '/',
-    redirect: '/solution-list',
+    redirect: '/solution.js-list',
     meta: {
       title: 'Home | ROS WEB DEVTOOLS'
     }
   },
   {
-    path: '/solution-list',
+    path: '/solution.js-list',
     name: 'solutionList',
     component: SolutionList,
     meta: {

@@ -54,7 +54,7 @@
 <script>
 import api from '@/api'
 import lib from '@/lib'
-import settings from '@/settings'
+import config from '@/config'
 
 export default {
   name: "SolutionList",
@@ -68,7 +68,7 @@ export default {
       // form
       form: {
         page: 1,
-        pageSize: settings.DEFAULT_SOLUTION_LIST_PAGE_SIZE,
+        pageSize: config.DEFAULT_SOLUTION_LIST_PAGE_SIZE,
         count: 0
       },
       newSolutionName: ''

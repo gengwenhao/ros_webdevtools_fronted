@@ -2,7 +2,7 @@
   <div id="common-header">
     <div class="inner-con">
       <div class="logo">
-        <img src="@/assets/robot-line.png"/>
+        <img src="@/assets/robot-line.png" alt="robot-line"/>
       </div>
       <div class="title" @click="$router.push({name: 'solutionList'})">
         ROS WEB DEVTOOLS
