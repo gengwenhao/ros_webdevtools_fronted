@@ -1,16 +1,36 @@
-import axios from 'axios'
-const HOST = 'http://localhost:8000'
+import axios from './axios'
+
 // 保存解决方案
-export const saveSolution = (data) => axios.post(`${HOST}/api/solution/`, data)
+export const saveSolution = (data) => axios.request({
+  url: `/api/solution/`,
+  method: 'post',
+  data
+})
 
 // 加载全部解决方案
-export const loadSolutions = (params, config) => axios.get(`${HOST}/api/solution/`, {...config, params})
+export const list = (params) => axios.request({
+  url: `/api/solution/`,
+  method: 'get',
+  params
+})
 
 // 加载解决方案
-export const loadSolutionDetail = (params, id, config) => axios.get(`${HOST}/api/solution/${id}/`, {...config, params})
+export const get = (params, id) => axios.request({
+  url: `/api/solution/${id}/`,
+  method: 'get',
+  params
+})
 
 // 修改解决方案
-export const updateSolutionDetail = (data, id) => axios.put(`${HOST}/api/solution/${id}/`, data)
+export const update = (data, id) => axios.request({
+  url: `/api/solution/${id}/`,
+  method: 'put',
+  data
+})
 
 // 删除解决方案
-export const deleteSolution = (params, id, config) => axios.delete(`${HOST}/api/solution/${id}/`, {...config, params})
+export const remove = (params, id) => axios.request({
+  url: `/api/solution/${id}/`,
+  method: 'delete',
+  params
+})

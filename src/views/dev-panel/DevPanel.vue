@@ -341,27 +341,11 @@ export default {
       // Blockly 将图形转换成的python代码
       code: null,
       // Blockly 工具箱配置
-      toolbox: lib.DEFAULT_TOOLBOX_SETTINGS,
+      toolbox: config.blockly.DEFAULT_TOOLBOX_SETTINGS,
       // Blockly 其他配置
-      optOptions: {
-        grid: {
-          spacing: 20,
-          length: 3,
-          colour: '#ccc',
-          snap: true
-        },
-        trashcan: true,
-        move: {
-          scrollbars: {
-            horizontal: true,
-            vertical: true
-          },
-          drag: true,
-          wheel: false
-        }
-      },
+      optOptions: config.blockly.DEFAULT_OPT_OPTIONS,
       // 自动保存项目的定时器
-      timer: null,
+      autoSaveSolutionTimer: null,
 
       // 远程主机列表
       allRemoteMachineList: [],
@@ -499,7 +483,7 @@ export default {
     isShowRemoteMachineListPanel(val) {
       if (val === true) {
         this.remoteMachineTableForm.page = 1
-        api.loadRemoteMachines(this.queryRemoteMachineParams)
+        api.remoteMachine.list(this.queryRemoteMachineParams)
           .then(res => {
             this.remoteMachineTableForm.count = res.data.count
             this.remoteMachineTableForm.results = res.data.results
@@ -512,7 +496,7 @@ export default {
     isShowOpenProjectPanel(val) {
       if (val === true) {
         this.projectTableForm.page = 1
-        api.loadSolutions(this.queryProjectParams)
+        api.solution.list(this.queryProjectParams)
           .then(res => {
             this.projectTableForm.count = res.data.count
             this.projectTableForm.results = res.data.results
@@ -525,7 +509,7 @@ export default {
     isShowFunctionCodeListPanel(val) {
       if (val === true) {
         this.functionTableForm.page = 1
-        api.loadDefinedBlock(this.queryFunctionParams)
+        api.definedBlock.list(this.queryFunctionParams)
           .then(res => {
             this.functionTableForm.count = res.data.count
             this.functionTableForm.results = res.data.results
@@ -538,7 +522,7 @@ export default {
     isShowTemplatePanel(val) {
       if (val === true) {
         this.templateTableForm.page = 1
-        api.loadCodeTemplates(this.queryTemplateParams)
+        api.codeTemplate.list(this.queryTemplateParams)
           .then(res => {
             this.templateTableForm.count = res.data.count
             this.templateTableForm.results = res.data.results
@@ -608,16 +592,16 @@ export default {
     // 更新页面初始数据
     updateInitInfo() {
       // 加载面板信息
-      api.getPanelInfo({
+      api.commonAPI.getPanelInfo({
         solutionID: this.$route.query.solutionID
       }).then(res => {
         this.panelInfo = res.data
       })
 
       // 加载自定义函数
-      api.loadDefinedBlock({
+      api.definedBlock.list({
         page: 1,
-        page_size: config.DEFAULT_USER_DEFINED_BLOCKS_NUMBER,
+        page_size: config.devPanel.DEFAULT_USER_DEFINED_BLOCKS_NUMBER,
         solutionID: this.$route.query.solutionID
       }).then(res => {
         this.allFunctionCodeList = res.data.results
@@ -625,18 +609,18 @@ export default {
       })
 
       // 加载自定义模板
-      api.loadCodeTemplates({
+      api.codeTemplate.list({
         page: 1,
-        page_size: config.DEFAULT_USER_DEFINED_TEMPLATE_NUMBER,
+        page_size: config.devPanel.DEFAULT_USER_DEFINED_TEMPLATE_NUMBER,
         solutionID: this.$route.query.solutionID
       }).then(res => {
         this.allTemplateList = res.data.results
       })
 
       // 加载远程主机
-      api.loadRemoteMachines({
+      api.remoteMachine.list({
         page: 1,
-        page_size: config.DEFAULT_REMOTE_MACHINE_NUMBER,
+        page_size: config.devPanel.DEFAULT_REMOTE_MACHINE_NUMBER,
         solutionID: this.$route.query.solutionID
       }).then(res => {
         this.allRemoteMachineList = res.data.results
@@ -648,7 +632,7 @@ export default {
         return -1
       }
 
-      api.updateSolutionDetail({
+      api.solution.update({
         code: lib.getBlocklyXMLText(this.blocklyWorkSpaceIns),
         object_code: this.code
       }, this.$route.query.solutionID).then(res => {
@@ -661,7 +645,7 @@ export default {
         return -1
       }
 
-      api.updateSolutionDetail({
+      api.solution.update({
         code: lib.getBlocklyXMLText(this.blocklyWorkSpaceIns),
         object_code: this.code
       }, this.$route.query.solutionID).then(res => {
@@ -670,7 +654,7 @@ export default {
     },
     // 加载解决方案
     loadSolution() {
-      api.loadSolutionDetail({}, this.$route.query.solutionID)
+      api.solution.get({}, this.$route.query.solutionID)
         .then(res => {
           this.isShowOpenProjectPanel = false
           this.isLoading = true
@@ -701,11 +685,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.deleteRemoteMachine({}, id)
+        api.remoteMachine.remove({}, id)
           .then(res => {
             this.$message.success('连接配置已移除')
             this.updateInitInfo()
-            api.loadRemoteMachines(this.queryRemoteMachineParams)
+            api.remoteMachine.list(this.queryRemoteMachineParams)
               .then(res => {
                 this.remoteMachineTableForm.count = res.data.count
                 this.remoteMachineTableForm.results = res.data.results
@@ -730,11 +714,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.deleteDefinedBlock({}, id)
+        api.definedBlock.remove({}, id)
           .then(res => {
             this.$message.success('删除成功')
             this.updateInitInfo()
-            api.loadDefinedBlock(this.queryFunctionParams)
+            api.definedBlock.list(this.queryFunctionParams)
               .then(res => {
                 this.functionTableForm.count = res.data.count
                 this.functionTableForm.results = res.data.results
@@ -759,11 +743,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.deleteCodeTemplate({}, id)
+        api.codeTemplate.remove({}, id)
           .then(() => {
             this.$message.success('删除成功')
             this.updateInitInfo()
-            api.loadCodeTemplates(this.queryTemplateParams)
+            api.codeTemplate.list(this.queryTemplateParams)
               .then(res => {
                 this.templateTableForm.count = res.data.count
                 this.templateTableForm.results = res.data.results
@@ -786,7 +770,7 @@ export default {
       }
 
       this.isLoading = true
-      api.saveCodeTemplate(form, this.$route.query.solutionID)
+      api.codeTemplate.save(form, this.$route.query.solutionID)
         .then(res => {
           this.isLoading = false
           if (res.status === 201) {
@@ -795,7 +779,7 @@ export default {
             this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
             this.$message.success('模板保存成功')
             this.updateInitInfo()
-            api.loadCodeTemplates(this.queryTemplateParams)
+            api.codeTemplate.list(this.queryTemplateParams)
               .then(res => {
                 this.templateTableForm.count = res.data.count
                 this.templateTableForm.results = res.data.results
@@ -829,7 +813,7 @@ export default {
     // 项目列表页码变换事件
     handleProjectTablePageChange(page) {
       this.projectTableForm.page = page
-      api.loadSolutions(this.queryProjectParams)
+      api.solution.list(this.queryProjectParams)
         .then(res => {
           this.projectTableForm.count = res.data.count
           this.projectTableForm.results = res.data.results
@@ -841,7 +825,7 @@ export default {
     // 自定义模板列表页码变换事件
     handleTemplateTablePageChanged(page) {
       this.functionTableForm.page = page
-      api.loadCodeTemplates(this.queryFunctionParams)
+      api.codeTemplate.list(this.queryFunctionParams)
         .then(res => {
           this.templateTableForm.count = res.data.count
           this.templateTableForm.results = res.data.results
@@ -853,7 +837,7 @@ export default {
     // 远程机器人列表页码变换事件
     handleRemoteMachineTablePageChanged(page) {
       this.remoteMachineTableForm.page = page
-      api.loadRemoteMachines(this.queryRemoteMachineParams)
+      api.remoteMachine.list(this.queryRemoteMachineParams)
         .then(res => {
           this.remoteMachineTableForm.count = res.data.count
           this.remoteMachineTableForm.results = res.data.results
@@ -865,7 +849,7 @@ export default {
     // 自定义函数列表页码变换事件
     handleFunctionTablePageChanged(page) {
       this.functionTableForm.page = page
-      api.loadDefinedBlock(this.queryFunctionParams)
+      api.definedBlock.list(this.queryFunctionParams)
         .then(res => {
           this.functionTableForm.count = res.data.count
           this.functionTableForm.results = res.data.results
@@ -894,7 +878,7 @@ export default {
 
       this.$message.warning(`连接主机中`)
       const form = Object.assign({code: this.code, solutionID: this.$route.query.solutionID}, this.codeSenderForm)
-      api.sendCode(form)
+      api.commonAPI.sendCode(form)
         .then(({data}) => {
           switch (data.status) {
             case 200:
@@ -928,7 +912,7 @@ export default {
       }
 
       const form = Object.assign({code: this.code}, this.templateAdderForm)
-      api.generateCode(form)
+      api.commonAPI.generateCode(form)
         .then(res => {
           if (res.data.timestamp) {
             this.$toast.success('代码生成完毕')
@@ -937,7 +921,7 @@ export default {
             // download file
             setTimeout(() => {
               new JsFileDownloader({
-                url: api.generateCodeURL(res.data.timestamp),
+                url: api.commonAPI.generateCodeURL(res.data.timestamp),
                 filename: `${res.data.timestamp}-results.py`
               }).then(() => {
               })
@@ -958,7 +942,7 @@ export default {
       }
 
       this.isLoading = true
-      api.updateCodeTemplate(form, this.currentEditedTemplate.id)
+      api.codeTemplate.update(form, this.currentEditedTemplate.id)
         .then(res => {
           this.isLoading = false
           this.isShowTemplateEditor = false
@@ -966,7 +950,7 @@ export default {
           this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
           this.$message.success('模板保存成功')
           this.updateInitInfo()
-          api.loadCodeTemplates(this.queryTemplateParams)
+          api.codeTemplate.list(this.queryTemplateParams)
             .then(res => {
               this.templateTableForm.count = res.data.count
               this.templateTableForm.results = res.data.results
@@ -999,7 +983,7 @@ export default {
       }
 
       this.isLoading = true
-      api.saveDefinedBlock(form, this.$route.query.solutionID)
+      api.definedBlock.save(form, this.$route.query.solutionID)
         .then(res => {
           this.isLoading = false
           if (res.status === 201) {
@@ -1008,7 +992,7 @@ export default {
             this.functionName = ''
             this.$message.success('保存成功')
             this.updateInitInfo()
-            api.loadDefinedBlock(this.queryFunctionParams)
+            api.definedBlock.list(this.queryFunctionParams)
               .then(res => {
                 this.functionTableForm.count = res.data.count
                 this.functionTableForm.results = res.data.results
@@ -1045,14 +1029,14 @@ export default {
         code: this.functionCode
       }
 
-      api.updateDefinedBlock(form, this.currentEditedFunction.id)
+      api.definedBlock.update(form, this.currentEditedFunction.id)
         .then(res => {
           this.isShowFunctionCodeEditor = false
           this.functionCode = ''
           this.functionName = ''
           this.$message.success('保存成功')
           this.updateInitInfo()
-          api.loadDefinedBlock(this.queryFunctionParams)
+          api.definedBlock.list(this.queryFunctionParams)
             .then(res => {
               this.functionTableForm.count = res.data.count
               this.functionTableForm.results = res.data.results
@@ -1079,7 +1063,7 @@ export default {
         return -1
       }
 
-      api.saveRemoteMachine(this.remoteMachineForm, this.$route.query.solutionID)
+      api.remoteMachine.save(this.remoteMachineForm, this.$route.query.solutionID)
         .then(res => {
           this.remoteMachineForm = {
             name: '默认配置',
@@ -1092,7 +1076,7 @@ export default {
           this.isShowRemoteMachineAdder = false
           this.$message.success('保存成功')
           this.updateInitInfo()
-          api.loadRemoteMachines(this.queryRemoteMachineParams)
+          api.remoteMachine.list(this.queryRemoteMachineParams)
             .then(res => {
               this.remoteMachineTableForm.count = res.data.count
               this.remoteMachineTableForm.results = res.data.results
@@ -1135,7 +1119,7 @@ export default {
         ssh_password: this.currentRemoteSSHPassword
       }
 
-      api.updateRemoteMachine(form, this.currentEditedRemoteMachine.id)
+      api.remoteMachine.update(form, this.currentEditedRemoteMachine.id)
         .then(res => {
           this.isShowRemoteMachineEditor = false
           this.currentRemoteMachineName = ''
@@ -1146,7 +1130,7 @@ export default {
           this.currentRemoteSSHPassword = ''
           this.$message.success('配置已更新')
           this.updateInitInfo()
-          api.loadRemoteMachines(this.queryRemoteMachineParams)
+          api.remoteMachine.list(this.queryRemoteMachineParams)
             .then(res => {
               this.remoteMachineTableForm.count = res.data.count
               this.remoteMachineTableForm.results = res.data.results
@@ -1170,7 +1154,7 @@ export default {
   created() {
     this.loadSolution()
     this.updateInitInfo()
-    this.timer = setInterval(() => {
+    this.autoSaveSolutionTimer = setInterval(() => {
       this.updateSolutionAuto()
     }, 1000 * 60 * 2) // 2分钟自动保存一次
   }

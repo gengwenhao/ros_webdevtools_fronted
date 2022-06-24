@@ -32,8 +32,8 @@
              p-id="5602" width="200" height="200">
           <path d="M800 688v128h-128v64h128v128h64v-128h128v-64h-128v-128z" fill="#d4237a" p-id="5603"></path>
           <path
-              d="M589.248 0L928 338.752V512h-64V384H544V64H96v896h448v64H32V0h557.248zM608 109.248V320h210.752L608 109.248z"
-              fill="#d4237a" fill-opacity=".65" p-id="5604"></path>
+            d="M589.248 0L928 338.752V512h-64V384H544V64H96v896h448v64H32V0h557.248zM608 109.248V320h210.752L608 109.248z"
+            fill="#d4237a" fill-opacity=".65" p-id="5604"></path>
         </svg>
       </div>
     </div>
@@ -80,15 +80,15 @@ export default {
     },
     loadSolutions() {
       this.isLoading = true
-      api.loadSolutions(this.form)
-         .then(res => {
-           this.isLoading = false
-           this.solutionList = res.data.results
-           this.form.count = res.data.count
-         })
-         .catch(err => {
-           this.isLoading = false
-         })
+      api.solution.list(this.form)
+        .then(res => {
+          this.isLoading = false
+          this.solutionList = res.data.results
+          this.form.count = res.data.count
+        })
+        .catch(err => {
+          this.isLoading = false
+        })
     },
 
     // event
@@ -102,11 +102,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.deleteSolution({}, id)
-           .then(res => {
-             this.$message.success('删除成功')
-             this.loadSolutions()
-           })
+        api.solution.remove({}, id)
+          .then(res => {
+            this.$message.success('删除成功')
+            this.loadSolutions()
+          })
       })
     },
     handleCancelSolutionAdder() {
@@ -118,7 +118,7 @@ export default {
         return -1
       }
 
-      api.saveSolution({title: this.newSolutionName}).then(res => {
+      api.solution.saveSolution({title: this.newSolutionName}).then(res => {
         this.$message.success('添加成功')
         this.newSolutionName = ''
         this.isShowSolutionAdderPanel = false

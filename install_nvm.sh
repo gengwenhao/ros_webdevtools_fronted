@@ -108,9 +108,9 @@ install_nvm_from_git() {
         echo >&2 'Failed to initialize nvm repo. Please report this!'
         exit 2
       }
-      command git --git-dir="${INSTALL_DIR}/.git" remote add origin "$(nvm_source)" 2> /dev/null \
-        || command git --git-dir="${INSTALL_DIR}/.git" remote set-url origin "$(nvm_source)" || {
-        echo >&2 'Failed to add remote "origin" (or set the URL). Please report this!'
+      command git --git-dir="${INSTALL_DIR}/.git" remove add origin "$(nvm_source)" 2> /dev/null \
+        || command git --git-dir="${INSTALL_DIR}/.git" remove set-url origin "$(nvm_source)" || {
+        echo >&2 'Failed to add remove "origin" (or set the URL). Please report this!'
         exit 2
       }
       command git --git-dir="${INSTALL_DIR}/.git" fetch origin tag "$(nvm_latest_version)" --depth=1 || {
