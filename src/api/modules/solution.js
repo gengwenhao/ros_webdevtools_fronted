@@ -1,7 +1,7 @@
 import axios from './axios'
 
 // 保存解决方案
-export const saveSolution = (data) => axios.request({
+export const save = (data) => axios.request({
   url: `/api/solution/`,
   method: 'post',
   data

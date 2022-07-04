@@ -1,12 +1,24 @@
 <template>
   <div id="solution-list" v-loading="isLoading">
+
     <!-- 解决方案表格容器 -->
     <div class="con" v-show="!isLoading">
-      <div v-if="solutionList && solutionList.length > 0"
-           :style="{padding: '23px', width: 'calc(100vw - 100px)', height: 'calc(100vh - 100px)', margin: 'auto'}">
-        <el-button type="primary" :style="{marginBottom: '12px'}" @click="isShowSolutionAdderPanel = true">创建新的解决方案
+      <div
+        v-if="tableData && tableData.length > 0"
+        :style="{padding: '23px', width: 'calc(100vw - 100px)', height: 'calc(100vh - 100px)', margin: 'auto'}">
+        <el-button
+          icon="el-icon-plus"
+          type="primary"
+          :style="{marginBottom: '12px'}"
+          @click="$refs['solution-adder'].isShow = true"
+        >创建新的解决方案
         </el-button>
-        <el-table size="small" border :data="solutionList" height="90%">
+        <el-table
+          border
+          height="90%"
+          size="small"
+          :data="tableData"
+        >
           <el-table-column prop="title" label="名称" align="center"/>
           <el-table-column fixed="right" label="操作" align="center">
             <template slot-scope="$scope">
@@ -14,19 +26,19 @@
                          @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">进入
               </el-button>
               <el-button type="danger" size="small" plain icon="el-icon-delete"
-                         @click="handleDeleteSolution($scope.row.id)">删除
+                         @click="handleSolutionDelete($scope.row)">删除
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination layout="total, prev, pager, next, jumper"
-                       style="margin-top: 12px;"
-                       :current-page="form.page"
-                       :total="form.count"
-                       :page-size="15"
-                       @current-change="handlePageChange"/>
+        <el-pagination
+          layout="total, prev, pager, next, jumper"
+          style="margin-top: 12px;"
+          :current-page="controlsForm.pageIndex"
+          :total="total"
+          :page-size="controlsForm.pageSize"/>
       </div>
-      <div class="tips" v-else @click="isShowSolutionAdderPanel = true">
+      <div class="tips" v-else @click="$refs['solution-adder'].isShow = true">
         <h1>No solution is available</h1>
         <svg t="1647952913452" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
              p-id="5602" width="200" height="200">
@@ -39,95 +51,72 @@
     </div>
 
     <!-- 创建解决方案面板 -->
-    <el-dialog center title="创建新的解决方案" :visible.sync="isShowSolutionAdderPanel">
-      <el-input size="mini" clearable placeholder="请输入解决方案名称" min="1" max="32" style="margin-bottom: 4px"
-                v-model="newSolutionName"
-                @keypress.enter.native="handleConfirmSolutionCodeAdder"/>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleCancelSolutionAdder">取 消</el-button>
-        <el-button size="mini" type="primary" @click="handleConfirmSolutionCodeAdder">确 定</el-button>
-      </span>
-    </el-dialog>
+    <solution-adder
+      ref="solution-adder"
+      @success="handleAdderSuccess"
+      @error="$message.error"
+    />
+
   </div>
 </template>
 
 <script>
 import api from '@/api'
-import lib from '@/lib'
 import config from '@/config'
+import commonElTable from '@/mixins/common-el-table'
+import SolutionAdder from '@/components/solution/SolutionAdder'
 
 export default {
   name: "SolutionList",
+  components: {SolutionAdder},
+  mixins: [commonElTable],
+
   data() {
     return {
-      // flag
       isLoading: false,
-      isShowSolutionAdderPanel: false,
-      // res
-      solutionList: [],
-      // form
-      form: {
-        page: 1,
-        pageSize: config.DEFAULT_SOLUTION_LIST_PAGE_SIZE,
-        count: 0
+      isShowSolutionAdder: false,
+      controlsForm: {
+        pageIndex: 1,
+        pageSize: config.solutionList.DEFAULT_SOLUTION_LIST_PAGE_SIZE,
+        pageStart: 1
       },
-      newSolutionName: ''
+      newSolutionName: '',
     }
   },
+
   methods: {
-    printInfo(data) {
-      console.log(data)
-    },
-    loadSolutions() {
+    fetchTableData() {
       this.isLoading = true
-      api.solution.list(this.form)
-        .then(res => {
-          this.isLoading = false
-          this.solutionList = res.data.results
-          this.form.count = res.data.count
-        })
-        .catch(err => {
-          this.isLoading = false
-        })
+      api.solution
+         .list(this.form)
+         .then(res => {
+           this.isLoading = false
+           this.tableData = res.data.results
+           this.count = res.data.count
+         })
+         .catch(err => {
+           this.isLoading = false
+         })
     },
 
-    // event
-    handlePageChange(page) {
-      this.form.page = page
-      this.loadSolutions()
-    },
-    handleDeleteSolution(id) {
+    handleSolutionDelete({id}) {
       this.$confirm('是否永久删除该解决方案？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         api.solution.remove({}, id)
-          .then(res => {
-            this.$message.success('删除成功')
-            this.loadSolutions()
-          })
+           .then(res => {
+             this.$message.success('删除成功')
+             this.fetchTableData()
+           })
       })
     },
-    handleCancelSolutionAdder() {
-      this.newSolutionName = ''
-      this.isShowSolutionAdderPanel = false
-    },
-    handleConfirmSolutionCodeAdder() {
-      if (lib.isEmptyStr(this.newSolutionName)) {
-        return -1
-      }
 
-      api.solution.saveSolution({title: this.newSolutionName}).then(res => {
-        this.$message.success('添加成功')
-        this.newSolutionName = ''
-        this.isShowSolutionAdderPanel = false
-        this.loadSolutions()
-      })
+    handleAdderSuccess() {
+      this.$message.success('添加完成')
+      this.fetchTableData()
     }
-  },
-  created() {
-    this.loadSolutions()
   }
 }
 </script>
@@ -164,7 +153,5 @@ export default {
       }
     }
   }
-
-
 }
 </style>

@@ -1,11 +1,11 @@
 // 表格需要的相关逻辑
-export default {
+const commonElTable = {
   data() {
     return {
       // 数据量
       total: 0,
       // 表格绑定的数据
-      currentBindTableData: [],
+      tableData: [],
       // 表格选中
       tableSelectionItems: [],
       // form
@@ -64,3 +64,5 @@ fetchTableData() {
     }
   }
 }
+
+export default commonElTable
