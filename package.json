@@ -36,5 +36,8 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "repository": {
+    "url": "https://gitee.com/gengwenhao/ros_webdevtools_fronted"
+  }
 }

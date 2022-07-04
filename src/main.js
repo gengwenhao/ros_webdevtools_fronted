@@ -4,7 +4,8 @@ import App from './App.vue'
 import SuiVue from 'semantic-ui-vue'
 import ElementUI from 'element-ui'
 import Toast from "vue-toastification"
-import bus from '@/lib/bus'
+import Bus from '@/lib/bus'
+import Api from '@/api/install'
 import router from '@/router'
 import store from '@/store'
 // import css
@@ -23,10 +24,9 @@ Vue.config.ignoredElements.push('value')
 Vue.config.ignoredElements.push('statement')
 Vue.config.ignoredElements.push('mutation')
 
-// defined this.$
-Object.defineProperty(Vue.prototype, '$bus', bus)
-
 // vue use
+Vue.use(Api)
+Vue.use(Bus)
 Vue.use(SuiVue)
 Vue.use(ElementUI, {
   size: 'mini'
@@ -36,6 +36,7 @@ Vue.use(Toast, {
   timeout: 2500
 })
 
+// create instance and mounted
 new Vue({
   router,
   store,

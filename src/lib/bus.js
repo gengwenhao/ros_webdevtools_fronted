@@ -1,4 +1,5 @@
-import Vue from 'vue'
-
-const bus = new Vue({})
-export default bus
+export default {
+  install(Vue) {
+    Object.defineProperty(Vue.prototype, '$bus', {value: new Vue({})})
+  }
+}

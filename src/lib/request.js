@@ -9,12 +9,10 @@ class HttpRequest {
 
   getInsideConfig() {
     // axios 的全局配置
-    const config = {
+    return {
       baseURL: this.baseURL,
       headers: {}
     }
-
-    return config
   }
 
   setInterceptors(instance, url) {
