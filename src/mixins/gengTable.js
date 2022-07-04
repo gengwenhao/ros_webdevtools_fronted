@@ -19,6 +19,7 @@ export default {
       }
     }
   },
+
   watch: {
     // 监控表格绑定的表单，如有变化直接请求接口更新数据
     controlsForm: {
@@ -29,6 +30,7 @@ export default {
       deep: true
     }
   },
+
   methods: {
     // xhr
     fetchTableData() {
@@ -44,15 +46,18 @@ fetchTableData() {
 }`
       console.log(tips)
     },
+
     // table handler
     // 表格分页变化
     handleSizeChange(size) {
       this.controlsForm.pageSize = Number(size)
     },
+
     // 表格页码变化
     handleCurrentChange(page) {
       this.controlsForm.pageIndex = Number(page)
     },
+
     // 表格选中项变化
     handleSelectionChange(val) {
       this.tableSelectionItems = val

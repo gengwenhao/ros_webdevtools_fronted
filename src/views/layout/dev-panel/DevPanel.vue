@@ -321,9 +321,9 @@
 </template>
 
 <script>
-import Blockly from 'blockly'
 import 'blockly/python'
 import _ from 'lodash'
+import Blockly from 'blockly'
 
 import api from '@/api'
 import lib from '@/lib'
@@ -1162,7 +1162,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "../../assets/palette";
+@import "../../../assets/palette";
 
 #dev-panel {
   user-select: none;

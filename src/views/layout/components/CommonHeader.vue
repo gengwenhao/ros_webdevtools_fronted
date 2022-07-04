@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-@import "./src/assets/palette";
+@import "../../../assets/palette";
 
 #common-header {
   height: 50px;
