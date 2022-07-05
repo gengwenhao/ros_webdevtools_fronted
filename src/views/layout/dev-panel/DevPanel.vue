@@ -4,7 +4,7 @@
     <div class="icon-group-con">
       <div class="icon-group">
         <div class="icon-con" @click="$refs['code-template-lister'].isShow = true">
-          <el-badge :value="panelInfo.templateCnt">
+          <el-badge :value="globalInfo.templateCnt">
             <el-tooltip class="item" effect="dark" content="新建代码生成模板" placement="bottom-start">
               <i class="iconfont icon-template"></i>
             </el-tooltip>
@@ -12,7 +12,7 @@
         </div>
 
         <div class="icon-con" @click="isShowFunctionCodeListPanel = true">
-          <el-badge :value="panelInfo.blocklyFunctionCnt">
+          <el-badge :value="globalInfo.blocklyFunctionCnt">
             <el-tooltip class="item" effect="dark" content="新建自定义函数" placement="bottom-start">
               <i class="iconfont icon-chuangjianjiedian"></i>
             </el-tooltip>
@@ -20,7 +20,7 @@
         </div>
 
         <div class="icon-con" @click="isShowRemoteMachineListPanel = true">
-          <el-badge :value="panelInfo.remoteMachineCnt">
+          <el-badge :value="globalInfo.remoteMachineCnt">
             <el-tooltip class="item" effect="dark" content="新建机器人连接配置" placement="bottom-start">
               <i class="iconfont icon-jiqiren"></i>
             </el-tooltip>
@@ -273,6 +273,7 @@
 import 'blockly/python'
 import _ from 'lodash'
 import Blockly from 'blockly'
+import {mapState} from 'vuex'
 
 import api from '@/api'
 import lib from '@/lib'
@@ -283,7 +284,9 @@ import CodeTemplateLister from '@/components/code-template/CodeTemplateLister'
 
 export default {
   name: "DevPanel",
+
   components: {CodeTemplateLister},
+
   data() {
     return {
       //  Blockly 库相关
@@ -305,23 +308,11 @@ export default {
       currentEditedFunction: null,
       currentEditedTemplate: null,
       currentEditedRemoteMachine: null,
-      // 面板信息
-      panelInfo: {
-        templateCnt: 0,
-        projectCnt: 0,
-        blocklyFunctionCnt: 0,
-        remoteMachineCnt: 0
-      },
       // 自定义函数
       functionCodeList: [],
       allFunctionCodeList: [],
       // form
       projectTableForm: {
-        page: 1,
-        count: 0,
-        results: []
-      },
-      templateTableForm: {
         page: 1,
         count: 0,
         results: []
@@ -362,12 +353,8 @@ export default {
       isShowRemoteMachineEditor: false,
       isShowFunctionCodeAdder: false,
       isShowFunctionCodeEditor: false,
-      isShowTemplateAdder: false,
-      isShowTemplateEditor: false,
       isShowFunctionCodeListPanel: false,
       isShowRemoteMachineListPanel: false,
-      isShowTemplateListPanel: false,
-      isShowTemplatePanel: false,
       isShowPackagerPanel: false,
       isShowSendCodePanel: false,
       isShowOpenProjectPanel: false,
@@ -384,7 +371,9 @@ export default {
       currentRemoteSSHPassword: '',
     }
   },
+
   computed: {
+    ...mapState(['globalInfo']),
     queryProjectParams() {
       const form = {...this.projectTableForm}
       form.solutionID = this.$route.query.solutionID
@@ -407,16 +396,6 @@ export default {
     },
     queryRemoteMachineParams() {
       const form = {...this.remoteMachineTableForm}
-      form.solutionID = this.$route.query.solutionID
-      delete form.results
-      delete form.previous
-      delete form.next
-      delete form.count
-
-      return form
-    },
-    queryTemplateParams() {
-      const form = {...this.templateTableForm}
       form.solutionID = this.$route.query.solutionID
       delete form.results
       delete form.previous
@@ -463,19 +442,6 @@ export default {
            })
            .catch(() => {
              this.functionTableForm.results = []
-           })
-      }
-    },
-    isShowTemplatePanel(val) {
-      if (val === true) {
-        this.templateTableForm.page = 1
-        api.codeTemplate.list(this.queryTemplateParams)
-           .then(res => {
-             this.templateTableForm.count = res.data.count
-             this.templateTableForm.results = res.data.results
-           })
-           .catch(() => {
-             this.templateTableForm.results = []
            })
       }
     }
@@ -539,11 +505,7 @@ export default {
     // 更新页面初始数据
     updateInitInfo() {
       // 加载面板信息
-      api.commonAPI.getPanelInfo({
-        solutionID: this.$route.query.solutionID
-      }).then(res => {
-        this.panelInfo = res.data
-      })
+      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
 
       // 加载自定义函数
       api.definedBlock.list({
@@ -676,77 +638,6 @@ export default {
            })
       })
     },
-    // 编辑模板事件
-    handleEditTemplate(data) {
-      this.isShowTemplateEditor = true
-      this.templateName = data.name
-      this.templateCode = data.content
-      this.currentEditedTemplate = data
-    },
-    // 删除模板事件
-    handleDeleteTemplate(id) {
-      this.$confirm('是否永久删除该模板？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        api.codeTemplate.remove({}, id)
-           .then(() => {
-             this.$message.success('删除成功')
-             this.updateInitInfo()
-             api.codeTemplate.list(this.queryTemplateParams)
-                .then(res => {
-                  this.templateTableForm.count = res.data.count
-                  this.templateTableForm.results = res.data.results
-                })
-                .catch(() => {
-                  this.templateTableForm.results = []
-                })
-           })
-      })
-    },
-    // 保存模板事件
-    handleSaveGenerateTemplate: _.debounce(function () {
-      if (lib.isEmptyStr(this.templateName) || lib.isEmptyStr(this.templateCode)) {
-        return -1
-      }
-
-      const form = {
-        name: this.templateName,
-        content: this.templateCode
-      }
-
-      this.isLoading = true
-      api.codeTemplate.save(form, this.$route.query.solutionID)
-         .then(res => {
-           this.isLoading = false
-           if (res.status === 201) {
-             this.isShowTemplateAdder = false
-             this.templateName = ''
-             this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
-             this.$message.success('模板保存成功')
-             this.updateInitInfo()
-             api.codeTemplate.list(this.queryTemplateParams)
-                .then(res => {
-                  this.templateTableForm.count = res.data.count
-                  this.templateTableForm.results = res.data.results
-                })
-                .catch(() => {
-                  this.templateTableForm.results = []
-                })
-           } else {
-             this.$message.error('模板保存失败')
-           }
-         })
-         .catch(err => {
-           this.isLoading = false
-           if (err.response.data.name[0] === '具有 模板名 的 代码模板 已存在。') {
-             this.$message.error('该模板名称已存在')
-           } else {
-             this.$message.error('保存失败')
-           }
-         })
-    }, 400),
     // 清空工作区事件
     handleClearWorkspace() {
       this.$confirm('是否清空工作环境？', '提示', {
@@ -767,18 +658,6 @@ export default {
          })
          .catch(() => {
            this.projectTableForm.results = []
-         })
-    },
-    // 自定义模板列表页码变换事件
-    handleTemplateTablePageChanged(page) {
-      this.functionTableForm.page = page
-      api.codeTemplate.list(this.queryFunctionParams)
-         .then(res => {
-           this.templateTableForm.count = res.data.count
-           this.templateTableForm.results = res.data.results
-         })
-         .catch(() => {
-           this.functionTableForm.results = []
          })
     },
     // 远程机器人列表页码变换事件
@@ -876,47 +755,6 @@ export default {
 
            }
          })
-    },
-    // 更新模板事件事件
-    handleConfirmUpdateTemplate: _.debounce(function () {
-      if (lib.isEmptyStr(this.templateName) || lib.isEmptyStr(this.templateCode)) {
-        return -1
-      }
-
-      const form = {
-        name: this.templateName,
-        content: this.templateCode
-      }
-
-      this.isLoading = true
-      api.codeTemplate.update(form, this.currentEditedTemplate.id)
-         .then(res => {
-           this.isLoading = false
-           this.isShowTemplateEditor = false
-           this.templateName = ''
-           this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
-           this.$message.success('模板保存成功')
-           this.updateInitInfo()
-           api.codeTemplate.list(this.queryTemplateParams)
-              .then(res => {
-                this.templateTableForm.count = res.data.count
-                this.templateTableForm.results = res.data.results
-              })
-              .catch(err => {
-                this.templateTableForm.results = []
-              })
-         })
-         .catch(err => {
-           this.isLoading = false
-           this.$message.error('修改失败')
-         })
-
-    }, 400),
-    // 取消更新模板事件
-    handleCancelUpdateTemplate() {
-      this.templateName = ''
-      this.templateCode = ''
-      this.isShowTemplateEditor = false
     },
     // 自定义函数添加 确认事件
     handleConfirmFunctionCodeAdder: _.debounce(function (functionName) {

@@ -3,7 +3,7 @@
   <div class="code-template-lister">
     <el-dialog
       center
-      title="代码生成模板列表"
+      title="该解决方案的代码模板"
       :visible.sync="isShow"
       @open="handleOpen"
     >
@@ -106,8 +106,8 @@ export default {
            .remove({}, id)
            .then(() => {
              this.$message.success('模板删除成功')
-             // this.$store.commit('updateGlobalData')
              this.fetchTableData()
+             this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
            })
       })
     },
@@ -115,12 +115,13 @@ export default {
     handleAdderSuccess(data) {
       this.$message.success('模板添加完成！')
       this.fetchTableData()
-      // this.$store.commit('updateGlobalData')
+      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
     },
 
     handleEditorSuccess(data) {
       this.$message.success('模板修改成功！')
       this.fetchTableData()
+      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
     }
   }
 }
