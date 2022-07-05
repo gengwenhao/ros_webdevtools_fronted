@@ -39,5 +39,6 @@
   ],
   "repository": {
     "url": "https://gitee.com/gengwenhao/ros_webdevtools_fronted"
-  }
+  },
+  "license": "MIT"
 }

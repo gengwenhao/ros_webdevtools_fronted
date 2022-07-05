@@ -3,7 +3,7 @@
     <!-- 按钮组 -->
     <div class="icon-group-con">
       <div class="icon-group">
-        <div class="icon-con" @click="isShowTemplatePanel = true">
+        <div class="icon-con" @click="$refs['code-template-dialog'].isShow = true">
           <el-badge :value="panelInfo.templateCnt">
             <el-tooltip class="item" effect="dark" content="新建代码生成模板" placement="bottom-start">
               <i class="iconfont icon-template"></i>
@@ -27,7 +27,6 @@
           </el-badge>
         </div>
 
-
         <div class="icon-con" @click="updateSolution">
           <el-tooltip class="item" effect="dark" content="保存代码" placement="bottom-start">
             <i class="iconfont icon-baocun"></i>
@@ -46,11 +45,6 @@
           </el-tooltip>
         </div>
 
-        <!--        <div class="icon-con" @click="handleOpenTerm">-->
-        <!--          <el-tooltip class="item" effect="dark" content="打开终端" placement="bottom-start">-->
-        <!--            <i class="iconfont icon-terminal"></i>-->
-        <!--          </el-tooltip>-->
-        <!--        </div>-->
       </div>
 
       <div class="icon-group">
@@ -293,29 +287,31 @@
     </el-dialog>
 
     <!--  代码生成模板列表  -->
-    <el-dialog center title="代码生成模板列表" :visible.sync="isShowTemplatePanel">
-      <el-button style="margin-bottom: 23px" type="primary" icon="el-icon-plus"
-                 @click="isShowTemplateAdder = true">添加新的模板
-      </el-button>
-      <el-table v-if="templateTableForm && templateTableForm.results" :data="templateTableForm.results"
-                style="width: 100%;max-height: 400px;overflow-y: auto">
-        <el-table-column prop="name" align="center" label="模板名称"/>
-        <el-table-column prop="add_time" align="center" label="添加时间"/>
-        <el-table-column prop="update_time" align="center" label="更新时间"/>
-        <el-table-column label="操作" align="center" width="200px">
-          <template slot-scope="scope">
-            <el-button type="primary" @click="handleEditTemplate(scope.row)">编辑</el-button>
-            <el-button type="danger" @click="handleDeleteTemplate(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination layout="total, prev, pager, next, jumper"
-                     style="margin-top: 12px;"
-                     :current-page="templateTableForm.page"
-                     :total="templateTableForm.count"
-                     :page-size="5"
-                     @current-change="handleTemplateTablePageChanged"/>
-    </el-dialog>
+    <!--    <el-dialog center title="代码生成模板列表" :visible.sync="isShowTemplatePanel">-->
+    <!--      <el-button style="margin-bottom: 23px" type="primary" icon="el-icon-plus"-->
+    <!--                 @click="isShowTemplateAdder = true">添加新的模板-->
+    <!--      </el-button>-->
+    <!--      <el-table v-if="templateTableForm && templateTableForm.results" :data="templateTableForm.results"-->
+    <!--                style="width: 100%;max-height: 400px;overflow-y: auto">-->
+    <!--        <el-table-column prop="name" align="center" label="模板名称"/>-->
+    <!--        <el-table-column prop="add_time" align="center" label="添加时间"/>-->
+    <!--        <el-table-column prop="update_time" align="center" label="更新时间"/>-->
+    <!--        <el-table-column label="操作" align="center" width="200px">-->
+    <!--          <template slot-scope="scope">-->
+    <!--            <el-button type="primary" @click="handleEditTemplate(scope.row)">编辑</el-button>-->
+    <!--            <el-button type="danger" @click="handleDeleteTemplate(scope.row.id)">删除</el-button>-->
+    <!--          </template>-->
+    <!--        </el-table-column>-->
+    <!--      </el-table>-->
+    <!--      <el-pagination layout="total, prev, pager, next, jumper"-->
+    <!--                     style="margin-top: 12px;"-->
+    <!--                     :current-page="templateTableForm.page"-->
+    <!--                     :total="templateTableForm.count"-->
+    <!--                     :page-size="5"-->
+    <!--                     @current-change="handleTemplateTablePageChanged"/>-->
+    <!--    </el-dialog>-->
+    <code-template-dialog
+      ref="code-template-dialog"/>
 
   </div>
 </template>
@@ -329,10 +325,12 @@ import api from '@/api'
 import lib from '@/lib'
 import config from '@/config'
 import JsFileDownloader from 'js-file-downloader'
+import CodeTemplateDialog from '@/components/code-template/CodeTemplateDialog'
 
 
 export default {
   name: "DevPanel",
+  components: {CodeTemplateDialog},
   data() {
     return {
       //  Blockly 库相关
@@ -484,52 +482,52 @@ export default {
       if (val === true) {
         this.remoteMachineTableForm.page = 1
         api.remoteMachine.list(this.queryRemoteMachineParams)
-          .then(res => {
-            this.remoteMachineTableForm.count = res.data.count
-            this.remoteMachineTableForm.results = res.data.results
-          })
-          .catch(() => {
-            this.remoteMachineTableForm.results = []
-          })
+           .then(res => {
+             this.remoteMachineTableForm.count = res.data.count
+             this.remoteMachineTableForm.results = res.data.results
+           })
+           .catch(() => {
+             this.remoteMachineTableForm.results = []
+           })
       }
     },
     isShowOpenProjectPanel(val) {
       if (val === true) {
         this.projectTableForm.page = 1
         api.solution.list(this.queryProjectParams)
-          .then(res => {
-            this.projectTableForm.count = res.data.count
-            this.projectTableForm.results = res.data.results
-          })
-          .catch(() => {
-            this.projectTableForm.results = []
-          })
+           .then(res => {
+             this.projectTableForm.count = res.data.count
+             this.projectTableForm.results = res.data.results
+           })
+           .catch(() => {
+             this.projectTableForm.results = []
+           })
       }
     },
     isShowFunctionCodeListPanel(val) {
       if (val === true) {
         this.functionTableForm.page = 1
         api.definedBlock.list(this.queryFunctionParams)
-          .then(res => {
-            this.functionTableForm.count = res.data.count
-            this.functionTableForm.results = res.data.results
-          })
-          .catch(() => {
-            this.functionTableForm.results = []
-          })
+           .then(res => {
+             this.functionTableForm.count = res.data.count
+             this.functionTableForm.results = res.data.results
+           })
+           .catch(() => {
+             this.functionTableForm.results = []
+           })
       }
     },
     isShowTemplatePanel(val) {
       if (val === true) {
         this.templateTableForm.page = 1
         api.codeTemplate.list(this.queryTemplateParams)
-          .then(res => {
-            this.templateTableForm.count = res.data.count
-            this.templateTableForm.results = res.data.results
-          })
-          .catch(() => {
-            this.templateTableForm.results = []
-          })
+           .then(res => {
+             this.templateTableForm.count = res.data.count
+             this.templateTableForm.results = res.data.results
+           })
+           .catch(() => {
+             this.templateTableForm.results = []
+           })
       }
     }
   },
@@ -561,7 +559,7 @@ export default {
         Blockly.Blocks[data.name] = {
           init: function () {
             this.appendDummyInput()
-              .appendField(data.name)
+                .appendField(data.name)
             this.setPreviousStatement(true, null)
             this.setNextStatement(true, null)
             this.setColour(230)
@@ -655,16 +653,16 @@ export default {
     // 加载解决方案
     loadSolution() {
       api.solution.get({}, this.$route.query.solutionID)
-        .then(res => {
-          this.isShowOpenProjectPanel = false
-          this.isLoading = true
-          lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
-          setTimeout(() => {
-            this.isLoading = false
-            lib.blocklyXMLToDOM(res.data.code, this.blocklyWorkSpaceIns)
-            this.$message.success('导入成功')
-          }, 400)
-        })
+         .then(res => {
+           this.isShowOpenProjectPanel = false
+           this.isLoading = true
+           lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
+           setTimeout(() => {
+             this.isLoading = false
+             lib.blocklyXMLToDOM(res.data.code, this.blocklyWorkSpaceIns)
+             this.$message.success('导入成功')
+           }, 400)
+         })
     },
 
     // 编辑机器人连接配置事件
@@ -686,18 +684,18 @@ export default {
         type: 'warning'
       }).then(() => {
         api.remoteMachine.remove({}, id)
-          .then(res => {
-            this.$message.success('连接配置已移除')
-            this.updateInitInfo()
-            api.remoteMachine.list(this.queryRemoteMachineParams)
-              .then(res => {
-                this.remoteMachineTableForm.count = res.data.count
-                this.remoteMachineTableForm.results = res.data.results
-              })
-              .catch(() => {
-                this.remoteMachineTableForm.results = []
-              })
-          })
+           .then(res => {
+             this.$message.success('连接配置已移除')
+             this.updateInitInfo()
+             api.remoteMachine.list(this.queryRemoteMachineParams)
+                .then(res => {
+                  this.remoteMachineTableForm.count = res.data.count
+                  this.remoteMachineTableForm.results = res.data.results
+                })
+                .catch(() => {
+                  this.remoteMachineTableForm.results = []
+                })
+           })
       })
     },
     // 编辑自定义函数事件
@@ -715,18 +713,18 @@ export default {
         type: 'warning'
       }).then(() => {
         api.definedBlock.remove({}, id)
-          .then(res => {
-            this.$message.success('删除成功')
-            this.updateInitInfo()
-            api.definedBlock.list(this.queryFunctionParams)
-              .then(res => {
-                this.functionTableForm.count = res.data.count
-                this.functionTableForm.results = res.data.results
-              })
-              .catch(() => {
-                this.functionTableForm.results = []
-              })
-          })
+           .then(res => {
+             this.$message.success('删除成功')
+             this.updateInitInfo()
+             api.definedBlock.list(this.queryFunctionParams)
+                .then(res => {
+                  this.functionTableForm.count = res.data.count
+                  this.functionTableForm.results = res.data.results
+                })
+                .catch(() => {
+                  this.functionTableForm.results = []
+                })
+           })
       })
     },
     // 编辑模板事件
@@ -744,18 +742,18 @@ export default {
         type: 'warning'
       }).then(() => {
         api.codeTemplate.remove({}, id)
-          .then(() => {
-            this.$message.success('删除成功')
-            this.updateInitInfo()
-            api.codeTemplate.list(this.queryTemplateParams)
-              .then(res => {
-                this.templateTableForm.count = res.data.count
-                this.templateTableForm.results = res.data.results
-              })
-              .catch(() => {
-                this.templateTableForm.results = []
-              })
-          })
+           .then(() => {
+             this.$message.success('删除成功')
+             this.updateInitInfo()
+             api.codeTemplate.list(this.queryTemplateParams)
+                .then(res => {
+                  this.templateTableForm.count = res.data.count
+                  this.templateTableForm.results = res.data.results
+                })
+                .catch(() => {
+                  this.templateTableForm.results = []
+                })
+           })
       })
     },
     // 保存模板事件
@@ -771,34 +769,34 @@ export default {
 
       this.isLoading = true
       api.codeTemplate.save(form, this.$route.query.solutionID)
-        .then(res => {
-          this.isLoading = false
-          if (res.status === 201) {
-            this.isShowTemplateAdder = false
-            this.templateName = ''
-            this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
-            this.$message.success('模板保存成功')
-            this.updateInitInfo()
-            api.codeTemplate.list(this.queryTemplateParams)
-              .then(res => {
-                this.templateTableForm.count = res.data.count
-                this.templateTableForm.results = res.data.results
-              })
-              .catch(() => {
-                this.templateTableForm.results = []
-              })
-          } else {
-            this.$message.error('模板保存失败')
-          }
-        })
-        .catch(err => {
-          this.isLoading = false
-          if (err.response.data.name[0] === '具有 模板名 的 代码模板 已存在。') {
-            this.$message.error('该模板名称已存在')
-          } else {
-            this.$message.error('保存失败')
-          }
-        })
+         .then(res => {
+           this.isLoading = false
+           if (res.status === 201) {
+             this.isShowTemplateAdder = false
+             this.templateName = ''
+             this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
+             this.$message.success('模板保存成功')
+             this.updateInitInfo()
+             api.codeTemplate.list(this.queryTemplateParams)
+                .then(res => {
+                  this.templateTableForm.count = res.data.count
+                  this.templateTableForm.results = res.data.results
+                })
+                .catch(() => {
+                  this.templateTableForm.results = []
+                })
+           } else {
+             this.$message.error('模板保存失败')
+           }
+         })
+         .catch(err => {
+           this.isLoading = false
+           if (err.response.data.name[0] === '具有 模板名 的 代码模板 已存在。') {
+             this.$message.error('该模板名称已存在')
+           } else {
+             this.$message.error('保存失败')
+           }
+         })
     }, 400),
     // 清空工作区事件
     handleClearWorkspace() {
@@ -814,49 +812,49 @@ export default {
     handleProjectTablePageChange(page) {
       this.projectTableForm.page = page
       api.solution.list(this.queryProjectParams)
-        .then(res => {
-          this.projectTableForm.count = res.data.count
-          this.projectTableForm.results = res.data.results
-        })
-        .catch(() => {
-          this.projectTableForm.results = []
-        })
+         .then(res => {
+           this.projectTableForm.count = res.data.count
+           this.projectTableForm.results = res.data.results
+         })
+         .catch(() => {
+           this.projectTableForm.results = []
+         })
     },
     // 自定义模板列表页码变换事件
     handleTemplateTablePageChanged(page) {
       this.functionTableForm.page = page
       api.codeTemplate.list(this.queryFunctionParams)
-        .then(res => {
-          this.templateTableForm.count = res.data.count
-          this.templateTableForm.results = res.data.results
-        })
-        .catch(() => {
-          this.functionTableForm.results = []
-        })
+         .then(res => {
+           this.templateTableForm.count = res.data.count
+           this.templateTableForm.results = res.data.results
+         })
+         .catch(() => {
+           this.functionTableForm.results = []
+         })
     },
     // 远程机器人列表页码变换事件
     handleRemoteMachineTablePageChanged(page) {
       this.remoteMachineTableForm.page = page
       api.remoteMachine.list(this.queryRemoteMachineParams)
-        .then(res => {
-          this.remoteMachineTableForm.count = res.data.count
-          this.remoteMachineTableForm.results = res.data.results
-        })
-        .catch(() => {
-          this.remoteMachineTableForm.results = []
-        })
+         .then(res => {
+           this.remoteMachineTableForm.count = res.data.count
+           this.remoteMachineTableForm.results = res.data.results
+         })
+         .catch(() => {
+           this.remoteMachineTableForm.results = []
+         })
     },
     // 自定义函数列表页码变换事件
     handleFunctionTablePageChanged(page) {
       this.functionTableForm.page = page
       api.definedBlock.list(this.queryFunctionParams)
-        .then(res => {
-          this.functionTableForm.count = res.data.count
-          this.functionTableForm.results = res.data.results
-        })
-        .catch(() => {
-          this.functionTableForm.results = []
-        })
+         .then(res => {
+           this.functionTableForm.count = res.data.count
+           this.functionTableForm.results = res.data.results
+         })
+         .catch(() => {
+           this.functionTableForm.results = []
+         })
     },
     // 发送代码确认事件
     handleConfirmSendCode() {
@@ -879,30 +877,30 @@ export default {
       this.$message.warning(`连接主机中`)
       const form = Object.assign({code: this.code, solutionID: this.$route.query.solutionID}, this.codeSenderForm)
       api.commonAPI.sendCode(form)
-        .then(({data}) => {
-          switch (data.status) {
-            case 200:
-              this.$toast.success(data.result || '发送成功')
-              break
-            default:
-              this.$message.error(data.result || '')
-              break
-          }
-          this.codeSenderForm = {
-            templateID: null,
-            remote_machine: null,
-            run: true
-          }
-          this.isShowSendCodePanel = false
-        })
-        .catch(err => {
-          this.codeSenderForm = {
-            templateID: null,
-            remote_machine: null,
-            run: true
-          }
-          this.isShowSendCodePanel = false
-        })
+         .then(({data}) => {
+           switch (data.status) {
+             case 200:
+               this.$toast.success(data.result || '发送成功')
+               break
+             default:
+               this.$message.error(data.result || '')
+               break
+           }
+           this.codeSenderForm = {
+             templateID: null,
+             remote_machine: null,
+             run: true
+           }
+           this.isShowSendCodePanel = false
+         })
+         .catch(err => {
+           this.codeSenderForm = {
+             templateID: null,
+             remote_machine: null,
+             run: true
+           }
+           this.isShowSendCodePanel = false
+         })
     },
     // 生成代码确认事件
     handleConfirmGenerateCode() {
@@ -913,22 +911,22 @@ export default {
 
       const form = Object.assign({code: this.code}, this.templateAdderForm)
       api.commonAPI.generateCode(form)
-        .then(res => {
-          if (res.data.timestamp) {
-            this.$toast.success('代码生成完毕')
-            this.isShowPackagerPanel = false
+         .then(res => {
+           if (res.data.timestamp) {
+             this.$toast.success('代码生成完毕')
+             this.isShowPackagerPanel = false
 
-            // download file
-            setTimeout(() => {
-              new JsFileDownloader({
-                url: api.commonAPI.generateCodeURL(res.data.timestamp),
-                filename: `${res.data.timestamp}-results.py`
-              }).then(() => {
-              })
-            }, 1000)
+             // download file
+             setTimeout(() => {
+               new JsFileDownloader({
+                 url: api.commonAPI.generateCodeURL(res.data.timestamp),
+                 filename: `${res.data.timestamp}-results.py`
+               }).then(() => {
+               })
+             }, 1000)
 
-          }
-        })
+           }
+         })
     },
     // 更新模板事件事件
     handleConfirmUpdateTemplate: _.debounce(function () {
@@ -943,26 +941,26 @@ export default {
 
       this.isLoading = true
       api.codeTemplate.update(form, this.currentEditedTemplate.id)
-        .then(res => {
-          this.isLoading = false
-          this.isShowTemplateEditor = false
-          this.templateName = ''
-          this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
-          this.$message.success('模板保存成功')
-          this.updateInitInfo()
-          api.codeTemplate.list(this.queryTemplateParams)
-            .then(res => {
-              this.templateTableForm.count = res.data.count
-              this.templateTableForm.results = res.data.results
-            })
-            .catch(err => {
-              this.templateTableForm.results = []
-            })
-        })
-        .catch(err => {
-          this.isLoading = false
-          this.$message.error('修改失败')
-        })
+         .then(res => {
+           this.isLoading = false
+           this.isShowTemplateEditor = false
+           this.templateName = ''
+           this.templateCode = '#!/usr/bin/python3\n{{ __CODE__ }}'
+           this.$message.success('模板保存成功')
+           this.updateInitInfo()
+           api.codeTemplate.list(this.queryTemplateParams)
+              .then(res => {
+                this.templateTableForm.count = res.data.count
+                this.templateTableForm.results = res.data.results
+              })
+              .catch(err => {
+                this.templateTableForm.results = []
+              })
+         })
+         .catch(err => {
+           this.isLoading = false
+           this.$message.error('修改失败')
+         })
 
     }, 400),
     // 取消更新模板事件
@@ -984,32 +982,32 @@ export default {
 
       this.isLoading = true
       api.definedBlock.save(form, this.$route.query.solutionID)
-        .then(res => {
-          this.isLoading = false
-          if (res.status === 201) {
-            this.isShowFunctionCodeAdder = false
-            this.functionCode = ''
-            this.functionName = ''
-            this.$message.success('保存成功')
-            this.updateInitInfo()
-            api.definedBlock.list(this.queryFunctionParams)
-              .then(res => {
-                this.functionTableForm.count = res.data.count
-                this.functionTableForm.results = res.data.results
-              })
-              .catch(() => {
-                this.functionTableForm.results = []
-              })
-          } else {
-            this.$message.error('保存失败')
-          }
-        })
-        .catch(res => {
-          this.isLoading = false
-          if (res.response.data.name[0] === '具有 函数名 的 Blockly自定义函数 已存在。') {
-            this.$message.error('该函数名称已存在，保存失败')
-          }
-        })
+         .then(res => {
+           this.isLoading = false
+           if (res.status === 201) {
+             this.isShowFunctionCodeAdder = false
+             this.functionCode = ''
+             this.functionName = ''
+             this.$message.success('保存成功')
+             this.updateInitInfo()
+             api.definedBlock.list(this.queryFunctionParams)
+                .then(res => {
+                  this.functionTableForm.count = res.data.count
+                  this.functionTableForm.results = res.data.results
+                })
+                .catch(() => {
+                  this.functionTableForm.results = []
+                })
+           } else {
+             this.$message.error('保存失败')
+           }
+         })
+         .catch(res => {
+           this.isLoading = false
+           if (res.response.data.name[0] === '具有 函数名 的 Blockly自定义函数 已存在。') {
+             this.$message.error('该函数名称已存在，保存失败')
+           }
+         })
 
     }, 400),
     // 自定义函数添加 取消事件
@@ -1030,21 +1028,21 @@ export default {
       }
 
       api.definedBlock.update(form, this.currentEditedFunction.id)
-        .then(res => {
-          this.isShowFunctionCodeEditor = false
-          this.functionCode = ''
-          this.functionName = ''
-          this.$message.success('保存成功')
-          this.updateInitInfo()
-          api.definedBlock.list(this.queryFunctionParams)
-            .then(res => {
-              this.functionTableForm.count = res.data.count
-              this.functionTableForm.results = res.data.results
-            })
-            .catch(() => {
-              this.functionTableForm.results = []
-            })
-        })
+         .then(res => {
+           this.isShowFunctionCodeEditor = false
+           this.functionCode = ''
+           this.functionName = ''
+           this.$message.success('保存成功')
+           this.updateInitInfo()
+           api.definedBlock.list(this.queryFunctionParams)
+              .then(res => {
+                this.functionTableForm.count = res.data.count
+                this.functionTableForm.results = res.data.results
+              })
+              .catch(() => {
+                this.functionTableForm.results = []
+              })
+         })
     }, 400),
     // 自定义函数编辑 取消事件
     handleCancelFunctionCodeEditor() {
@@ -1064,31 +1062,31 @@ export default {
       }
 
       api.remoteMachine.save(this.remoteMachineForm, this.$route.query.solutionID)
-        .then(res => {
-          this.remoteMachineForm = {
-            name: '默认配置',
-            ip: 'localhost',
-            port: '8888',
-            ssh_port: '22',
-            ssh_user: 'root',
-            ssh_password: ''
-          }
-          this.isShowRemoteMachineAdder = false
-          this.$message.success('保存成功')
-          this.updateInitInfo()
-          api.remoteMachine.list(this.queryRemoteMachineParams)
-            .then(res => {
-              this.remoteMachineTableForm.count = res.data.count
-              this.remoteMachineTableForm.results = res.data.results
-            })
-            .catch(() => {
-              this.remoteMachineTableForm.results = []
-            })
-        })
-        .catch(err => {
-          console.log(err.response)
-          this.$message.warning(err.response.data.name[0] === '具有 名称 的 远程机器 已存在。' ? '该名称已存在' : '请见检查提交的数据')
-        })
+         .then(res => {
+           this.remoteMachineForm = {
+             name: '默认配置',
+             ip: 'localhost',
+             port: '8888',
+             ssh_port: '22',
+             ssh_user: 'root',
+             ssh_password: ''
+           }
+           this.isShowRemoteMachineAdder = false
+           this.$message.success('保存成功')
+           this.updateInitInfo()
+           api.remoteMachine.list(this.queryRemoteMachineParams)
+              .then(res => {
+                this.remoteMachineTableForm.count = res.data.count
+                this.remoteMachineTableForm.results = res.data.results
+              })
+              .catch(() => {
+                this.remoteMachineTableForm.results = []
+              })
+         })
+         .catch(err => {
+           console.log(err.response)
+           this.$message.warning(err.response.data.name[0] === '具有 名称 的 远程机器 已存在。' ? '该名称已存在' : '请见检查提交的数据')
+         })
     }, 400),
     // 机器人连接配置添加 取消事件
     handleCancelRemoteMachineAdder() {
@@ -1120,25 +1118,25 @@ export default {
       }
 
       api.remoteMachine.update(form, this.currentEditedRemoteMachine.id)
-        .then(res => {
-          this.isShowRemoteMachineEditor = false
-          this.currentRemoteMachineName = ''
-          this.currentRemoteMachineIP = ''
-          this.currentRemoteMachinePort = ''
-          this.currentRemoteSSHPort = ''
-          this.currentRemoteSSHUser = ''
-          this.currentRemoteSSHPassword = ''
-          this.$message.success('配置已更新')
-          this.updateInitInfo()
-          api.remoteMachine.list(this.queryRemoteMachineParams)
-            .then(res => {
-              this.remoteMachineTableForm.count = res.data.count
-              this.remoteMachineTableForm.results = res.data.results
-            })
-            .catch(() => {
-              this.remoteMachineTableForm.results = []
-            })
-        })
+         .then(res => {
+           this.isShowRemoteMachineEditor = false
+           this.currentRemoteMachineName = ''
+           this.currentRemoteMachineIP = ''
+           this.currentRemoteMachinePort = ''
+           this.currentRemoteSSHPort = ''
+           this.currentRemoteSSHUser = ''
+           this.currentRemoteSSHPassword = ''
+           this.$message.success('配置已更新')
+           this.updateInitInfo()
+           api.remoteMachine.list(this.queryRemoteMachineParams)
+              .then(res => {
+                this.remoteMachineTableForm.count = res.data.count
+                this.remoteMachineTableForm.results = res.data.results
+              })
+              .catch(() => {
+                this.remoteMachineTableForm.results = []
+              })
+         })
     }, 400),
     // 机器人连接配置 取消事件
     handleCancelRemoteMachineEditor() {

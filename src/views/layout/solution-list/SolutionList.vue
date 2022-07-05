@@ -38,6 +38,8 @@
           :total="total"
           :page-size="controlsForm.pageSize"/>
       </div>
+
+      <!-- 没有解决方案动画展示 -->
       <div class="tips" v-else @click="$refs['solution-adder'].isShow = true">
         <h1>No solution is available</h1>
         <svg t="1647952913452" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -48,6 +50,7 @@
             fill="#d4237a" fill-opacity=".65" p-id="5604"></path>
         </svg>
       </div>
+
     </div>
 
     <!-- 创建解决方案面板 -->
