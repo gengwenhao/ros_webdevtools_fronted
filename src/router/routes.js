@@ -40,7 +40,12 @@ export default [
     ]
   },
   {
+    path: '/404',
+    name: '404',
+    component: () => import('@/views/error-page/404')
+  },
+  {
     path: '*',
-    redirect: '/dev-panel'
+    redirect: '/404'
   }
 ]

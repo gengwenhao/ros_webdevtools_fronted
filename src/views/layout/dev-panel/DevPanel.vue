@@ -405,55 +405,16 @@ export default {
       return form
     }
   },
-  watch: {
-    isShowRemoteMachineListPanel(val) {
-      if (val === true) {
-        this.remoteMachineTableForm.page = 1
-        api.remoteMachine.list(this.queryRemoteMachineParams)
-           .then(res => {
-             this.remoteMachineTableForm.count = res.data.count
-             this.remoteMachineTableForm.results = res.data.results
-           })
-           .catch(() => {
-             this.remoteMachineTableForm.results = []
-           })
-      }
-    },
-    isShowOpenProjectPanel(val) {
-      if (val === true) {
-        this.projectTableForm.page = 1
-        api.solution.list(this.queryProjectParams)
-           .then(res => {
-             this.projectTableForm.count = res.data.count
-             this.projectTableForm.results = res.data.results
-           })
-           .catch(() => {
-             this.projectTableForm.results = []
-           })
-      }
-    },
-    isShowFunctionCodeListPanel(val) {
-      if (val === true) {
-        this.functionTableForm.page = 1
-        api.definedBlock.list(this.queryFunctionParams)
-           .then(res => {
-             this.functionTableForm.count = res.data.count
-             this.functionTableForm.results = res.data.results
-           })
-           .catch(() => {
-             this.functionTableForm.results = []
-           })
-      }
-    }
-  },
+
   methods: {
     printInfo(data) {
       console.log(data)
     },
+
     handleOpenTerm(data) {
-      // this.$router.push({name: 'commandPanel', query: {solutionID: this.$route.query.solutionID}})
       window.open(`/command-panel?id=${data.id}`, '_blank')
     },
+
     // 初始化 blockly 工作空间
     initBlocklyWS() {
       // 清空工具箱
@@ -502,39 +463,16 @@ export default {
 
       return this.blocklyWorkSpaceIns
     },
-    // 更新页面初始数据
-    updateInitInfo() {
-      // 加载面板信息
-      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
 
-      // 加载自定义函数
-      api.definedBlock.list({
-        page: 1,
-        page_size: config.devPanel.DEFAULT_USER_DEFINED_BLOCKS_NUMBER,
-        solutionID: this.$route.query.solutionID
-      }).then(res => {
-        this.allFunctionCodeList = res.data.results
+    // 更新页面初始数据
+    fetchGlobalData() {
+      // 加载全局信息
+      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
+      this.$nextTick(() => {
         this.initBlocklyWS()
       })
-
-      // 加载自定义模板
-      api.codeTemplate.list({
-        page: 1,
-        page_size: config.devPanel.DEFAULT_USER_DEFINED_TEMPLATE_NUMBER,
-        solutionID: this.$route.query.solutionID
-      }).then(res => {
-        this.allTemplateList = res.data.results
-      })
-
-      // 加载远程主机
-      api.remoteMachine.list({
-        page: 1,
-        page_size: config.devPanel.DEFAULT_REMOTE_MACHINE_NUMBER,
-        solutionID: this.$route.query.solutionID
-      }).then(res => {
-        this.allRemoteMachineList = res.data.results
-      })
     },
+
     // 更新解决方案
     updateSolution: _.debounce(function () {
       if (lib.isEmptyStr(this.code)) {
@@ -548,6 +486,7 @@ export default {
         this.$message.success('保存成功')
       })
     }, 1000),
+
     // 自动更新解决方案
     updateSolutionAuto() {
       if (lib.isEmptyStr(this.code)) {
@@ -561,6 +500,7 @@ export default {
         this.$message.success('项目被自动保存')
       })
     },
+
     // 加载解决方案
     loadSolution() {
       api.solution.get({}, this.$route.query.solutionID)
@@ -587,6 +527,7 @@ export default {
       this.currentRemoteSSHPassword = data.ssh_password
       this.currentEditedRemoteMachine = data
     },
+
     // 删除机器人连接配置事件
     handleDeleteRemoteMachine(id) {
       this.$confirm('是否永久删除该机器人连接配置？', '提示', {
@@ -597,7 +538,7 @@ export default {
         api.remoteMachine.remove({}, id)
            .then(res => {
              this.$message.success('连接配置已移除')
-             this.updateInitInfo()
+             this.fetchGlobalData()
              api.remoteMachine.list(this.queryRemoteMachineParams)
                 .then(res => {
                   this.remoteMachineTableForm.count = res.data.count
@@ -609,6 +550,7 @@ export default {
            })
       })
     },
+
     // 编辑自定义函数事件
     handleEditFunctionCode(data) {
       this.isShowFunctionCodeEditor = true
@@ -616,6 +558,7 @@ export default {
       this.functionCode = data.code
       this.currentEditedFunction = data
     },
+
     // 删除自定义函数事件
     handleDeleteFunctionCode(id) {
       this.$confirm('是否永久删除该自定义函数？', '提示', {
@@ -626,7 +569,7 @@ export default {
         api.definedBlock.remove({}, id)
            .then(res => {
              this.$message.success('删除成功')
-             this.updateInitInfo()
+             this.fetchGlobalData()
              api.definedBlock.list(this.queryFunctionParams)
                 .then(res => {
                   this.functionTableForm.count = res.data.count
@@ -638,6 +581,7 @@ export default {
            })
       })
     },
+
     // 清空工作区事件
     handleClearWorkspace() {
       this.$confirm('是否清空工作环境？', '提示', {
@@ -648,6 +592,7 @@ export default {
         lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
       })
     },
+
     // 项目列表页码变换事件
     handleProjectTablePageChange(page) {
       this.projectTableForm.page = page
@@ -660,6 +605,7 @@ export default {
            this.projectTableForm.results = []
          })
     },
+
     // 远程机器人列表页码变换事件
     handleRemoteMachineTablePageChanged(page) {
       this.remoteMachineTableForm.page = page
@@ -672,6 +618,7 @@ export default {
            this.remoteMachineTableForm.results = []
          })
     },
+
     // 自定义函数列表页码变换事件
     handleFunctionTablePageChanged(page) {
       this.functionTableForm.page = page
@@ -684,6 +631,7 @@ export default {
            this.functionTableForm.results = []
          })
     },
+
     // 发送代码确认事件
     handleConfirmSendCode() {
       if (!this.code) {
@@ -730,6 +678,7 @@ export default {
            this.isShowSendCodePanel = false
          })
     },
+
     // 生成代码确认事件
     handleConfirmGenerateCode() {
       if (!this.code) {
@@ -756,6 +705,7 @@ export default {
            }
          })
     },
+
     // 自定义函数添加 确认事件
     handleConfirmFunctionCodeAdder: _.debounce(function (functionName) {
       if (lib.isEmptyStr(this.functionCode) || lib.isEmptyStr(functionName)) {
@@ -776,7 +726,7 @@ export default {
              this.functionCode = ''
              this.functionName = ''
              this.$message.success('保存成功')
-             this.updateInitInfo()
+             this.fetchGlobalData()
              api.definedBlock.list(this.queryFunctionParams)
                 .then(res => {
                   this.functionTableForm.count = res.data.count
@@ -797,12 +747,14 @@ export default {
          })
 
     }, 400),
+
     // 自定义函数添加 取消事件
     handleCancelFunctionCodeAdder() {
       this.isShowFunctionCodeAdder = false
       this.functionName = ''
       this.functionCode = ''
     },
+
     // 自定义函数编辑 确认事件
     handleConfirmFunctionCodeEditor: _.debounce(function () {
       if (lib.isEmptyStr(this.functionCode) || lib.isEmptyStr(this.functionName)) {
@@ -820,7 +772,7 @@ export default {
            this.functionCode = ''
            this.functionName = ''
            this.$message.success('保存成功')
-           this.updateInitInfo()
+           this.fetchGlobalData()
            api.definedBlock.list(this.queryFunctionParams)
               .then(res => {
                 this.functionTableForm.count = res.data.count
@@ -831,12 +783,14 @@ export default {
               })
          })
     }, 400),
+
     // 自定义函数编辑 取消事件
     handleCancelFunctionCodeEditor() {
       this.isShowFunctionCodeEditor = false
       this.functionName = ''
       this.functionCode = ''
     },
+
     // 机器人连接配置添加 确认事件
     handleConfirmRemoteMachineAdder: _.debounce(function () {
       if (lib.isEmptyStr(this.remoteMachineForm.name) ||
@@ -860,7 +814,7 @@ export default {
            }
            this.isShowRemoteMachineAdder = false
            this.$message.success('保存成功')
-           this.updateInitInfo()
+           this.fetchGlobalData()
            api.remoteMachine.list(this.queryRemoteMachineParams)
               .then(res => {
                 this.remoteMachineTableForm.count = res.data.count
@@ -875,6 +829,7 @@ export default {
            this.$message.warning(err.response.data.name[0] === '具有 名称 的 远程机器 已存在。' ? '该名称已存在' : '请见检查提交的数据')
          })
     }, 400),
+
     // 机器人连接配置添加 取消事件
     handleCancelRemoteMachineAdder() {
       this.remoteMachineForm = {
@@ -884,6 +839,7 @@ export default {
       }
       this.isShowRemoteMachineAdder = false
     },
+
     // 机器人连接配置编辑 确认事件
     handleConfirmRemoteMachineEditor: _.debounce(function () {
       if (lib.isEmptyStr(this.currentRemoteMachineName) ||
@@ -914,7 +870,7 @@ export default {
            this.currentRemoteSSHUser = ''
            this.currentRemoteSSHPassword = ''
            this.$message.success('配置已更新')
-           this.updateInitInfo()
+           this.fetchGlobalData()
            api.remoteMachine.list(this.queryRemoteMachineParams)
               .then(res => {
                 this.remoteMachineTableForm.count = res.data.count
@@ -925,6 +881,7 @@ export default {
               })
          })
     }, 400),
+
     // 机器人连接配置 取消事件
     handleCancelRemoteMachineEditor() {
       this.isShowRemoteMachineEditor = false
@@ -936,12 +893,28 @@ export default {
       this.currentRemoteSSHPassword = ''
     }
   },
+
   created() {
     this.loadSolution()
-    this.updateInitInfo()
+    this.fetchGlobalData()
     this.autoSaveSolutionTimer = setInterval(() => {
       this.updateSolutionAuto()
     }, 1000 * 60 * 2) // 2分钟自动保存一次
+  },
+
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+
+      // 检查路由传入的 solutionID 是否合法
+      if (vm.$route.query.solutionID) {
+        api.solution.get({}, vm.$route.query.solutionID).catch(err => {
+          vm.$router.push({name: '404'})
+        })
+      } else {
+        vm.$router.push({name: '404'})
+      }
+
+    })
   }
 }
 </script>
