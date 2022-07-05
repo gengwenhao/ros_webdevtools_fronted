@@ -23,7 +23,7 @@
         <el-table-column prop="add_time" align="center" label="添加时间"/>
         <el-table-column prop="update_time" align="center" label="更新时间"/>
         <el-table-column label="操作" align="center" width="200px">
-          <template slot-scope="scope">
+          <template v-slot="scope">
             <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
           </template>

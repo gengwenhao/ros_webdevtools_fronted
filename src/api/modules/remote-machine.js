@@ -4,7 +4,7 @@ import axios from './axios'
 // 添加远程机器
 export const save = (data, solutionID) => axios.request({
   url: `/api/remote_machine/?solutionID=${solutionID}`,
-  method: 'get',
+  method: 'post',
   data
 })
 

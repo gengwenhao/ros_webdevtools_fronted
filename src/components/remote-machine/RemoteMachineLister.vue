@@ -1,30 +1,33 @@
-<!--  弹出层：代码模板列表  -->
+<!-- 弹出层：机器人列表 -->
 <template>
-  <div class="code-template-lister">
+  <div class="remote-machine-lister">
     <el-dialog
       center
-      title="该解决方案的代码模板"
+      title="机器人连接配置列表"
       :visible.sync="isShow"
-      @open="handleOpen"
+      width="70%"
     >
 
       <el-button
         icon="el-icon-plus"
         style="margin-bottom: 23px"
         type="primary"
-        @click="$refs['code-template-adder'].isShow = true"
-      >添加新的模板
+        @click="$refs['remote-machine-adder'].isShow = true"
+      >添加新机器人连接配置
       </el-button>
 
       <el-table
         style="width: 100%; max-height: 400px; overflow-y: auto"
         :data="tableData"
       >
-        <el-table-column prop="name" align="center" label="模板名称"/>
+        <el-table-column prop="name" align="center" label="机器人名称"/>
+        <el-table-column prop="ip" align="center" label="IP"/>
+        <el-table-column prop="port" align="center" label="端口"/>
         <el-table-column prop="add_time" align="center" label="添加时间"/>
         <el-table-column prop="update_time" align="center" label="更新时间"/>
-        <el-table-column label="操作" align="center" width="200px">
+        <el-table-column label="操作" align="center" width="250px">
           <template v-slot="scope">
+            <el-button type="primary" @click="handleOpenTerm(scope.row)">连接 SSH</el-button>
             <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -42,16 +45,16 @@
 
     </el-dialog>
 
-    <!-- 弹出层：添加模板 -->
-    <code-template-adder
-      ref="code-template-adder"
+    <!-- 弹出层：添加机器人连接配置 -->
+    <remote-machine-adder
+      ref="remote-machine-adder"
       @success="handleAdderSuccess"
     />
 
-    <!-- 弹出层：编辑模板 -->
-    <code-template-editor
-      ref="code-template-editor"
-      :template-data="currentEditData"
+    <!-- 弹出层：编辑机器人连接配置 -->
+    <remote-machine-editor
+      ref="remote-machine-editor"
+      :remote-machine-data="currentEditData"
       @success="handleEditorSuccess"
     />
 
@@ -61,12 +64,12 @@
 <script>
 import api from '@/api'
 import commonElTable from '@/mixins/common-el-table'
-import CodeTemplateAdder from '@/components/code-template/CodeTemplateAdder'
-import CodeTemplateEditor from '@/components/code-template/CodeTemplateEditor'
+import RemoteMachineAdder from '@/components/remote-machine/RemoteMachineAdder'
+import RemoteMachineEditor from '@/components/remote-machine/RemoteMachineEditor'
 
 export default {
-  name: "CodeTemplateLister",
-  components: {CodeTemplateEditor, CodeTemplateAdder},
+  name: "RemoteMachineLister",
+  components: {RemoteMachineEditor, RemoteMachineAdder},
   mixins: [commonElTable],
 
   data() {
@@ -82,7 +85,7 @@ export default {
 
   methods: {
     fetchTableData() {
-      api.codeTemplate
+      api.remoteMachine
          .list({solutionID: this.$route.query.solutionID, ...this.controlsForm})
          .then(res => {
            this.total = res.data.count
@@ -93,35 +96,40 @@ export default {
          })
     },
 
+    handleOpenTerm(data) {
+      window.open(`/command-panel?id=${data.id}`, '_blank')
+    },
+
     handleEdit(data) {
       this.currentEditData = data
-      this.$refs['code-template-editor'].isShow = true
+      this.$refs['remote-machine-editor'].isShow = true
     },
 
     handleDelete({id}) {
-      this.$confirm('是否永久删除该模板？', '提示', {
+      this.$confirm('是否永久删除该连接配置？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        api.codeTemplate
+        api.remoteMachine
            .remove({}, id)
            .then(() => {
-             this.$message.success('模板删除成功!')
+             this.$message.success('该连接配置删除成功!')
              this.fetchTableData()
              this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
            })
       })
     },
 
+
     handleAdderSuccess(data) {
-      this.$message.success('模板添加完成！')
+      this.$message.success('该配置已添加完成！')
       this.fetchTableData()
       this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
     },
 
     handleEditorSuccess(data) {
-      this.$message.success('模板修改成功！')
+      this.$message.success('配置修改成功！')
       this.fetchTableData()
       this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
     }
