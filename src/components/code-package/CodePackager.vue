@@ -55,14 +55,34 @@ export default {
 
   methods: {
     handleConfirm() {
+      if (!this.code) {
+        this.$message.warning('空的工作空间无法生成代码，请至少添加一个图形模块')
+        return -1
+      }
+
+      if (this.globalInfo.templateList.length === 0) {
+        this.$message.warning('暂无可用的模板，请至少配置一个模板用于生成代码')
+        return -1
+      }
+
+      if (!this.code) {
+        this.$message.warning('前检查所使用的的模板')
+        return -1
+      }
+
       api.commonAPI
          .generateCode({templateID: this.templateID, code: this.code})
          .then(res => {
            this.$emit('success', res.data)
+           this.isShow = false
          })
          .catch(err => {
            this.$emit('error', err)
          })
+    },
+
+    handleOpen() {
+      this.templateID = this.globalInfo.templateList[0].id || null
     }
   }
 }

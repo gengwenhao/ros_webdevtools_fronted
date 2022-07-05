@@ -27,7 +27,7 @@
           </el-badge>
         </div>
 
-        <div class="icon-con" @click="updateSolution">
+        <div class="icon-con" @click="saveSolution">
           <el-tooltip class="item" effect="dark" content="保存代码" placement="bottom-start">
             <i class="iconfont icon-baocun"></i>
           </el-tooltip>
@@ -44,7 +44,6 @@
             <i class="iconfont icon-icon_sent"></i>
           </el-tooltip>
         </div>
-
       </div>
 
       <div class="icon-group">
@@ -56,31 +55,35 @@
     <div class="main-panel">
       <!-- blockly显示区 -->
       <div id="blocklyDiv"></div>
-      <!-- 工具箱中 -->
     </div>
-
 
     <!--  弹出层：自定义函数列表  -->
     <defined-block-lister
-      ref="defined-block-lister"/>
+      ref="defined-block-lister"
+    />
 
     <!--  弹出层：代码模板列表  -->
     <code-template-lister
-      ref="code-template-lister"/>
+      ref="code-template-lister"
+    />
 
     <!-- 弹出层：机器人列表 -->
     <remote-machine-lister
-      ref="remote-machine-lister"/>
+      ref="remote-machine-lister"
+    />
 
     <!-- 弹出层：代码发送 -->
     <code-sender
-      ref="convertedCode-sender"
+      ref="code-sender"
+      @success="$message.success"
+      @error="$message.error"
     />
 
     <!-- 弹出层：代码打包 -->
     <code-packager
-      ref="convertedCode-packager"
+      ref="code-packager"
       :code="convertedCode"
+      @success="handleCodePackagerSuccess"
     />
 
   </div>
@@ -102,7 +105,6 @@ import RemoteMachineLister from '@/components/remote-machine/RemoteMachineLister
 import CodeSender from '@/components/code-package/CodeSender'
 import CodePackager from '@/components/code-package/CodePackager'
 
-
 export default {
   name: "DevPanel",
 
@@ -120,15 +122,7 @@ export default {
       // Blockly 其他配置
       optOptions: config.blockly.DEFAULT_OPT_OPTIONS,
       // 自动保存项目的定时器
-      autoSaveSolutionTimer: null,
-      remoteMachineForm: {
-        name: '默认配置',
-        ip: 'localhost',
-        port: '8888',
-        ssh_port: '22',
-        ssh_user: 'root',
-        ssh_password: ''
-      }
+      autoSaveSolutionTimer: null
     }
   },
 
@@ -195,8 +189,8 @@ export default {
       })
     },
 
-    // 更新解决方案
-    updateSolution: _.debounce(function () {
+    // 保存解决方案
+    saveSolution: _.debounce(function () {
       if (lib.isEmptyStr(this.convertedCode)) {
         return -1
       }
@@ -209,8 +203,8 @@ export default {
       })
     }, 1000),
 
-    // 自动更新解决方案
-    updateSolutionAuto() {
+    // 自动保存解决方案
+    saveSolutionAuto() {
       if (lib.isEmptyStr(this.convertedCode)) {
         return -1
       }
@@ -249,81 +243,23 @@ export default {
       })
     },
 
-    // 发送代码确认事件
-    handleConfirmSendCode() {
+    // 代码生成成功
+    handleCodePackagerSuccess(data) {
       if (!this.convertedCode) {
         this.$message.error('空的工作空间无法生成代码')
         return -1
       }
 
-      if (lib.isEmptyStr(this.codeSenderForm.name)) {
-        this.$message.warning('请检查脚本名称')
-        return -1
-      } else if (!this.codeSenderForm.templateID) {
-        this.$message.warning('请检查选择的模板')
-        return -1
-      } else if (!this.codeSenderForm.remote_machine) {
-        this.$message.warning('请检查远程机器')
-        return -1
-      }
+      this.$toast.success('代码生成完毕')
 
-      this.$message.warning(`连接主机中`)
-      const form = Object.assign({
-        code: this.convertedCode,
-        solutionID: this.$route.query.solutionID
-      }, this.codeSenderForm)
-      api.commonAPI.sendCode(form)
-         .then(({data}) => {
-           switch (data.status) {
-             case 200:
-               this.$toast.success(data.result || '发送成功')
-               break
-             default:
-               this.$message.error(data.result || '')
-               break
-           }
-           this.codeSenderForm = {
-             templateID: null,
-             remote_machine: null,
-             run: true
-           }
-           this.isShowSendCodePanel = false
-         })
-         .catch(err => {
-           this.codeSenderForm = {
-             templateID: null,
-             remote_machine: null,
-             run: true
-           }
-           this.isShowSendCodePanel = false
-         })
-    },
-
-    // 生成代码确认事件
-    handleConfirmGenerateCode() {
-      if (!this.convertedCode) {
-        this.$message.error('空的工作空间无法生成代码')
-        return -1
-      }
-
-      const form = Object.assign({code: this.convertedCode}, this.templateAdderForm)
-      api.commonAPI.generateCode(form)
-         .then(res => {
-           if (res.data.timestamp) {
-             this.$toast.success('代码生成完毕')
-             this.isShowPackagerPanel = false
-
-             // download file
-             setTimeout(() => {
-               new JsFileDownloader({
-                 url: api.commonAPI.generateCodeURL(res.data.timestamp),
-                 filename: `${res.data.timestamp}-results.py`
-               }).then(() => {
-               })
-             }, 1000)
-
-           }
-         })
+      // download file
+      setTimeout(() => {
+        new JsFileDownloader({
+          url: api.commonAPI.generateCodeURL(data.timestamp),
+          filename: `${data.timestamp}-results.py`
+        }).then(() => {
+        })
+      }, 1000)
     }
   },
 
@@ -331,7 +267,7 @@ export default {
     this.loadSolution()
     this.fetchGlobalData()
     this.autoSaveSolutionTimer = setInterval(() => {
-      this.updateSolutionAuto()
+      this.saveSolutionAuto()
     }, 1000 * 60 * 2) // 2分钟自动保存一次
   },
 

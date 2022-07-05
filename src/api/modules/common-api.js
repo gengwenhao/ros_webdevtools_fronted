@@ -1,4 +1,5 @@
 import axios from './axios'
+import {BASE_URL} from '@/config'
 
 // 发送代码到远程机器
 export const sendCode = (data) => axios.request({
@@ -22,4 +23,4 @@ export const generateCode = (data) => axios.request({
 })
 
 // 代码下载地址
-export const generateCodeURL = (timestamp) => `/api/generate_code/${timestamp}`
+export const generateCodeURL = (timestamp) => `${BASE_URL}api/generate_code/${timestamp}`
