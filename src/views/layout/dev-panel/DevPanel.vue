@@ -3,7 +3,7 @@
     <!-- 按钮组 -->
     <div class="icon-group-con">
       <div class="icon-group">
-        <div class="icon-con" @click="$refs['code-template-dialog'].isShow = true">
+        <div class="icon-con" @click="$refs['code-template-lister'].isShow = true">
           <el-badge :value="panelInfo.templateCnt">
             <el-tooltip class="item" effect="dark" content="新建代码生成模板" placement="bottom-start">
               <i class="iconfont icon-template"></i>
@@ -154,30 +154,6 @@
       </span>
     </el-dialog>
 
-    <!-- 创建模板面板 -->
-    <el-dialog center title="创建代码生成模板" :visible.sync="isShowTemplateAdder">
-      <el-input size="mini" clearable placeholder="请输入模板名称" min="1" max="32" style="margin-bottom: 4px"
-                v-model="templateName"
-                @keypress.enter.native="handleSaveGenerateTemplate"/>
-      <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="templateCode"/>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="isShowTemplateAdder = false">取 消</el-button>
-        <el-button size="mini" type="primary" @click="handleSaveGenerateTemplate">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 编辑模板面板 -->
-    <el-dialog center title="编辑代码生成模板" :visible.sync="isShowTemplateEditor">
-      <el-input size="mini" clearable placeholder="请输入模板名称" min="1" max="32" style="margin-bottom: 4px"
-                v-model="templateName"
-                @keypress.enter.native="handleConfirmUpdateTemplate"/>
-      <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="templateCode"/>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleCancelUpdateTemplate">取 消</el-button>
-        <el-button size="mini" type="primary" @click="handleConfirmUpdateTemplate">确 定</el-button>
-      </span>
-    </el-dialog>
-
     <!-- 发送代码对话框 -->
     <el-dialog center title="请选择生成参数" :visible.sync="isShowSendCodePanel">
       <el-form ref="form" :model="codeSenderForm" :inline="true" label-width="110px">
@@ -286,32 +262,9 @@
                      @current-change="handleFunctionTablePageChanged"/>
     </el-dialog>
 
-    <!--  代码生成模板列表  -->
-    <!--    <el-dialog center title="代码生成模板列表" :visible.sync="isShowTemplatePanel">-->
-    <!--      <el-button style="margin-bottom: 23px" type="primary" icon="el-icon-plus"-->
-    <!--                 @click="isShowTemplateAdder = true">添加新的模板-->
-    <!--      </el-button>-->
-    <!--      <el-table v-if="templateTableForm && templateTableForm.results" :data="templateTableForm.results"-->
-    <!--                style="width: 100%;max-height: 400px;overflow-y: auto">-->
-    <!--        <el-table-column prop="name" align="center" label="模板名称"/>-->
-    <!--        <el-table-column prop="add_time" align="center" label="添加时间"/>-->
-    <!--        <el-table-column prop="update_time" align="center" label="更新时间"/>-->
-    <!--        <el-table-column label="操作" align="center" width="200px">-->
-    <!--          <template slot-scope="scope">-->
-    <!--            <el-button type="primary" @click="handleEditTemplate(scope.row)">编辑</el-button>-->
-    <!--            <el-button type="danger" @click="handleDeleteTemplate(scope.row.id)">删除</el-button>-->
-    <!--          </template>-->
-    <!--        </el-table-column>-->
-    <!--      </el-table>-->
-    <!--      <el-pagination layout="total, prev, pager, next, jumper"-->
-    <!--                     style="margin-top: 12px;"-->
-    <!--                     :current-page="templateTableForm.page"-->
-    <!--                     :total="templateTableForm.count"-->
-    <!--                     :page-size="5"-->
-    <!--                     @current-change="handleTemplateTablePageChanged"/>-->
-    <!--    </el-dialog>-->
-    <code-template-dialog
-      ref="code-template-dialog"/>
+    <!--  弹出层：代码模板列表  -->
+    <code-template-lister
+      ref="code-template-lister"/>
 
   </div>
 </template>
@@ -325,12 +278,12 @@ import api from '@/api'
 import lib from '@/lib'
 import config from '@/config'
 import JsFileDownloader from 'js-file-downloader'
-import CodeTemplateDialog from '@/components/code-template/CodeTemplateDialog'
+import CodeTemplateLister from '@/components/code-template/CodeTemplateLister'
 
 
 export default {
   name: "DevPanel",
-  components: {CodeTemplateDialog},
+  components: {CodeTemplateLister},
   data() {
     return {
       //  Blockly 库相关
@@ -422,8 +375,6 @@ export default {
       functionCode: null,
       // 函数名
       functionName: '',
-      // 模板名称
-      templateName: '',
       // 当前编辑的机器人信息
       currentRemoteMachineName: '',
       currentRemoteMachineIP: '',
@@ -431,8 +382,6 @@ export default {
       currentRemoteSSHPort: '',
       currentRemoteSSHUser: '',
       currentRemoteSSHPassword: '',
-      // 模板代码
-      templateCode: '{{ PYTHON_ENV }}\n{{ CODE }}',
     }
   },
   computed: {

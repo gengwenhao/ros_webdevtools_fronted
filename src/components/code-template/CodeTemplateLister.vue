@@ -1,6 +1,6 @@
 <!--  弹出层：代码模板列表  -->
 <template>
-  <div class="code-template-dialog">
+  <div class="code-template-lister">
     <el-dialog
       center
       title="代码生成模板列表"
@@ -12,6 +12,7 @@
         icon="el-icon-plus"
         style="margin-bottom: 23px"
         type="primary"
+        @click="$refs['code-template-adder'].isShow = true"
       >添加新的模板
       </el-button>
 
@@ -40,21 +41,40 @@
       />
 
     </el-dialog>
+
+    <!-- 弹出层：添加模板 -->
+    <code-template-adder
+      ref="code-template-adder"
+      @success="handleAdderSuccess"/>
+
+    <!-- 弹出层：编辑模板 -->
+    <code-template-editor
+      ref="code-template-editor"
+      :template-data="currentEditData"
+      @success="handleEditorSuccess"/>
+
   </div>
 </template>
 
 <script>
 import api from '@/api'
 import commonElTable from '@/mixins/common-el-table'
+import CodeTemplateAdder from '@/components/code-template/CodeTemplateAdder'
+import CodeTemplateEditor from '@/components/code-template/CodeTemplateEditor'
 
 export default {
-  name: "CodeTemplateDialog",
-
+  name: "CodeTemplateLister",
+  components: {CodeTemplateEditor, CodeTemplateAdder},
   mixins: [commonElTable],
 
   data() {
     return {
-      isShow: false
+      isShow: false,
+      currentEditData: null,
+      controlsForm: {
+        page: 1,
+        page_size: 5
+      }
     }
   },
 
@@ -72,7 +92,8 @@ export default {
     },
 
     handleEdit(data) {
-
+      this.currentEditData = data
+      this.$refs['code-template-editor'].isShow = true
     },
 
     handleDelete({id}) {
@@ -84,18 +105,23 @@ export default {
         api.codeTemplate
            .remove({}, id)
            .then(() => {
-             this.$message.success('删除成功')
+             this.$message.success('模板删除成功')
              // this.$store.commit('updateGlobalData')
              this.fetchTableData()
            })
       })
+    },
+
+    handleAdderSuccess(data) {
+      this.$message.success('模板添加完成！')
+      this.fetchTableData()
+      // this.$store.commit('updateGlobalData')
+    },
+
+    handleEditorSuccess(data) {
+      this.$message.success('模板修改成功！')
+      this.fetchTableData()
     }
   }
 }
 </script>
-
-<style scoped lang="scss">
-.code-template-dialog {
-
-}
-</style>
