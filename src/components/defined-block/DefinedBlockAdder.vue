@@ -1,9 +1,9 @@
-<!-- 弹出层：编辑模板 -->
+<!-- 弹出层：创建自定义函数 -->
 <template>
-  <div class="code-template-editor">
+  <div class="defined-block-adder">
     <el-dialog
       center
-      title="编辑该模板"
+      title="添加新的自定义函数"
       :visible.sync="isShow"
       @open="handleOpen"
     >
@@ -12,7 +12,7 @@
         clearable
         max="32"
         min="1"
-        placeholder="请输入模板名称"
+        placeholder="请输入函数名称"
         size="mini"
         style="margin-bottom: 4px"
         v-model="name"
@@ -24,7 +24,7 @@
         size="mini"
         type="textarea"
         :rows="8"
-        v-model="content"
+        v-model="code"
       />
 
       <span slot="footer" class="dialog-footer">
@@ -37,49 +37,40 @@
 </template>
 
 <script>
-import {isEmptyStr} from '@/lib/tools'
 import api from '@/api'
+import {isEmptyStr} from '@/lib/tools'
 
 export default {
-  name: "CodeTemplateEditor",
-
-  props: {
-    templateData: {
-      type: Object,
-      default: () => {
-        return {name: '', content: '{{ PYTHON_ENV }}\n{{ CODE }}'}
-      }
-    }
-  },
+  name: "DefinedBlockAdder",
 
   data() {
     return {
       isShow: false,
-      // 模板名称
+      // 函数名
       name: '',
-      // 模板代码
-      content: '{{ PYTHON_ENV }}\n{{ CODE }}',
+      // 自定义函数代码
+      code: null
     }
   },
 
   methods: {
     handleConfirm() {
-      if (isEmptyStr(this.name) || isEmptyStr(this.content)) {
-        this.$message.warning('请检查模板信息是否完整')
+      if (isEmptyStr(this.name) || isEmptyStr(this.code)) {
+        this.$message('请检查模块信息是否完整')
         return -1
       }
 
       const form = {
         name: this.name,
-        content: this.content
+        code: this.code
       }
 
       this.$emit('confirm', form)
 
-      api.codeTemplate
-         .update(form, this.templateData.id)
+      api.definedBlock
+         .save(form, this.$route.query.solutionID)
          .then(res => {
-           this.$emit('success', res)
+           this.$emit('success', res.data)
            this.isShow = false
          })
          .catch(err => {
@@ -88,9 +79,13 @@ export default {
     },
 
     handleOpen() {
-      this.name = this.templateData.name
-      this.content = this.templateData.content
+      this.name = ''
+      this.code = null
     }
   }
 }
 </script>
+
+<style scoped>
+
+</style>

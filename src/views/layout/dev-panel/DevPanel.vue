@@ -11,7 +11,7 @@
           </el-badge>
         </div>
 
-        <div class="icon-con" @click="isShowFunctionCodeListPanel = true">
+        <div class="icon-con" @click="$refs['defined-block-lister'].isShow = true">
           <el-badge :value="globalInfo.blocklyFunctionCnt">
             <el-tooltip class="item" effect="dark" content="新建自定义函数" placement="bottom-start">
               <i class="iconfont icon-chuangjianjiedian"></i>
@@ -92,17 +92,7 @@
       </span>
     </el-dialog>
 
-    <!-- 创建自定义函数面板 -->
-    <el-dialog center title="创建自定义函数" :visible.sync="isShowFunctionCodeAdder">
-      <el-input size="mini" clearable placeholder="请输入函数名称" min="1" max="32" style="margin-bottom: 4px"
-                v-model="functionName"
-                @keypress.enter.native="handleConfirmFunctionCodeAdder"/>
-      <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="functionCode"/>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleCancelFunctionCodeAdder">取 消</el-button>
-        <el-button size="mini" type="primary" @click="handleConfirmFunctionCodeAdder">确 定</el-button>
-      </span>
-    </el-dialog>
+
 
     <!-- 编辑机器人连接配置面板 -->
     <el-dialog center title="编辑机器人连接配置" :visible.sync="isShowRemoteMachineEditor">
@@ -143,16 +133,16 @@
     </el-dialog>
 
     <!-- 编辑自定义函数面板 -->
-    <el-dialog center title="编辑函数" :visible.sync="isShowFunctionCodeEditor">
-      <el-input size="mini" clearable placeholder="请输入函数名称" min="1" max="32" style="margin-bottom: 4px"
-                v-model="functionName"
-                @keypress.enter.native="handleConfirmFunctionCodeEditor"/>
-      <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="functionCode"/>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="handleCancelFunctionCodeEditor">取 消</el-button>
-        <el-button size="mini" type="primary" @click="handleConfirmFunctionCodeEditor">确 定</el-button>
-      </span>
-    </el-dialog>
+<!--    <el-dialog center title="编辑函数" :visible.sync="isShowFunctionCodeEditor">-->
+<!--      <el-input size="mini" clearable placeholder="请输入函数名称" min="1" max="32" style="margin-bottom: 4px"-->
+<!--                v-model="functionName"-->
+<!--                @keypress.enter.native="handleConfirmFunctionCodeEditor"/>-->
+<!--      <el-input size="mini" type="textarea" :rows="8" placeholder="请输入代码" v-model="functionCode"/>-->
+<!--      <span slot="footer" class="dialog-footer">-->
+<!--        <el-button size="mini" @click="handleCancelFunctionCodeEditor">取 消</el-button>-->
+<!--        <el-button size="mini" type="primary" @click="handleConfirmFunctionCodeEditor">确 定</el-button>-->
+<!--      </span>-->
+<!--    </el-dialog>-->
 
     <!-- 发送代码对话框 -->
     <el-dialog center title="请选择生成参数" :visible.sync="isShowSendCodePanel">
@@ -239,28 +229,8 @@
     </el-dialog>
 
     <!--  自定义函数列表  -->
-    <el-dialog center title="自定义函数列表" :visible.sync="isShowFunctionCodeListPanel">
-      <el-button style="margin-bottom: 23px" type="primary" icon="el-icon-plus"
-                 @click="isShowFunctionCodeAdder = true">添加自定义函数
-      </el-button>
-      <el-table :data="functionTableForm.results" style="width: 100%;max-height: 400px;overflow-y: auto">
-        <el-table-column prop="name" align="center" label="函数名称"/>
-        <el-table-column prop="add_time" align="center" label="添加时间"/>
-        <el-table-column prop="update_time" align="center" label="更新时间"/>
-        <el-table-column label="操作" align="center" width="200px">
-          <template slot-scope="scope">
-            <el-button type="primary" @click="handleEditFunctionCode(scope.row)">编辑</el-button>
-            <el-button type="danger" @click="handleDeleteFunctionCode(scope.row.id)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination layout="total, prev, pager, next, jumper"
-                     style="margin-top: 12px;"
-                     :current-page="functionTableForm.page"
-                     :total="functionTableForm.count"
-                     :page-size="5"
-                     @current-change="handleFunctionTablePageChanged"/>
-    </el-dialog>
+    <defined-block-lister
+      ref="defined-block-lister"/>
 
     <!--  弹出层：代码模板列表  -->
     <code-template-lister
@@ -280,12 +250,13 @@ import lib from '@/lib'
 import config from '@/config'
 import JsFileDownloader from 'js-file-downloader'
 import CodeTemplateLister from '@/components/code-template/CodeTemplateLister'
+import DefinedBlockLister from '@/components/defined-block/DefinedBlockLister'
 
 
 export default {
   name: "DevPanel",
 
-  components: {CodeTemplateLister},
+  components: {DefinedBlockLister, CodeTemplateLister},
 
   data() {
     return {
@@ -358,10 +329,7 @@ export default {
       isShowPackagerPanel: false,
       isShowSendCodePanel: false,
       isShowOpenProjectPanel: false,
-      // 自定义函数代码
-      functionCode: null,
-      // 函数名
-      functionName: '',
+
       // 当前编辑的机器人信息
       currentRemoteMachineName: '',
       currentRemoteMachineIP: '',
@@ -551,14 +519,6 @@ export default {
       })
     },
 
-    // 编辑自定义函数事件
-    handleEditFunctionCode(data) {
-      this.isShowFunctionCodeEditor = true
-      this.functionName = data.name
-      this.functionCode = data.code
-      this.currentEditedFunction = data
-    },
-
     // 删除自定义函数事件
     handleDeleteFunctionCode(id) {
       this.$confirm('是否永久删除该自定义函数？', '提示', {
@@ -704,91 +664,6 @@ export default {
 
            }
          })
-    },
-
-    // 自定义函数添加 确认事件
-    handleConfirmFunctionCodeAdder: _.debounce(function (functionName) {
-      if (lib.isEmptyStr(this.functionCode) || lib.isEmptyStr(functionName)) {
-        return -1
-      }
-
-      const form = {
-        name: this.functionName,
-        code: this.functionCode
-      }
-
-      this.isLoading = true
-      api.definedBlock.save(form, this.$route.query.solutionID)
-         .then(res => {
-           this.isLoading = false
-           if (res.status === 201) {
-             this.isShowFunctionCodeAdder = false
-             this.functionCode = ''
-             this.functionName = ''
-             this.$message.success('保存成功')
-             this.fetchGlobalData()
-             api.definedBlock.list(this.queryFunctionParams)
-                .then(res => {
-                  this.functionTableForm.count = res.data.count
-                  this.functionTableForm.results = res.data.results
-                })
-                .catch(() => {
-                  this.functionTableForm.results = []
-                })
-           } else {
-             this.$message.error('保存失败')
-           }
-         })
-         .catch(res => {
-           this.isLoading = false
-           if (res.response.data.name[0] === '具有 函数名 的 Blockly自定义函数 已存在。') {
-             this.$message.error('该函数名称已存在，保存失败')
-           }
-         })
-
-    }, 400),
-
-    // 自定义函数添加 取消事件
-    handleCancelFunctionCodeAdder() {
-      this.isShowFunctionCodeAdder = false
-      this.functionName = ''
-      this.functionCode = ''
-    },
-
-    // 自定义函数编辑 确认事件
-    handleConfirmFunctionCodeEditor: _.debounce(function () {
-      if (lib.isEmptyStr(this.functionCode) || lib.isEmptyStr(this.functionName)) {
-        return -1
-      }
-
-      const form = {
-        name: this.functionName,
-        code: this.functionCode
-      }
-
-      api.definedBlock.update(form, this.currentEditedFunction.id)
-         .then(res => {
-           this.isShowFunctionCodeEditor = false
-           this.functionCode = ''
-           this.functionName = ''
-           this.$message.success('保存成功')
-           this.fetchGlobalData()
-           api.definedBlock.list(this.queryFunctionParams)
-              .then(res => {
-                this.functionTableForm.count = res.data.count
-                this.functionTableForm.results = res.data.results
-              })
-              .catch(() => {
-                this.functionTableForm.results = []
-              })
-         })
-    }, 400),
-
-    // 自定义函数编辑 取消事件
-    handleCancelFunctionCodeEditor() {
-      this.isShowFunctionCodeEditor = false
-      this.functionName = ''
-      this.functionCode = ''
     },
 
     // 机器人连接配置添加 确认事件
