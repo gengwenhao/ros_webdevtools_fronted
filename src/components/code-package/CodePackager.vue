@@ -9,16 +9,18 @@
     >
 
       <el-form label-width="110px">
-        <el-form-item label="代码生成模板">
-          <el-select placeholder="请选择模板" v-model="templateID">
-            <el-option
-              v-for="item in globalInfo.templateList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
-        </el-form-item>
+        <div class="control-item">
+          <el-form-item label="代码生成模板">
+            <el-select placeholder="请选择模板" v-model="templateID">
+              <el-option
+                v-for="item in globalInfo.templateList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
@@ -87,3 +89,15 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+.code-packager {
+  .control-item {
+    width: 100%;
+
+    .el-select {
+      width: 100%;
+    }
+  }
+}
+</style>

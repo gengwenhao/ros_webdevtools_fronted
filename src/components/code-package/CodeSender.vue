@@ -8,24 +8,30 @@
       @open="handleOpen"
     >
 
-
       <el-form label-width="110px">
         <el-row>
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="脚本名称" required>
-              <el-input placeholder="输入脚本名称" v-model="name"/>
+              <div class="control-item">
+                <el-input placeholder="输入脚本名称" v-model="name"/>
+              </div>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+        </el-row>
+
+        <el-row>
+          <el-col :span="24">
             <el-form-item label="代码生成模板" required>
-              <el-select placeholder="请选择模板" v-model="templateID">
-                <el-option
-                  v-for="item in globalInfo.templateList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                />
-              </el-select>
+              <div class="control-item">
+                <el-select placeholder="请选择模板" v-model="templateID">
+                  <el-option
+                    v-for="item in globalInfo.templateList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -33,14 +39,16 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="远程主机" required>
-              <el-select placeholder="请选择设备" v-model="remote_machine">
-                <el-option
-                  v-for="item in globalInfo.remoteMachineList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                />
-              </el-select>
+              <div class="control-item">
+                <el-select placeholder="请选择设备" v-model="remote_machine">
+                  <el-option
+                    v-for="item in globalInfo.remoteMachineList"
+                    :key="item.id"
+                    :label="item.name"
+                    :value="item.id"
+                  />
+                </el-select>
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -136,8 +144,12 @@ export default {
 
 <style scoped lang="scss">
 .code-sender {
-  .el-form-item::v-deep {
-    padding: 0 0 0 20px;
+  .control-item {
+    width: 100%;
+
+    .el-select {
+      width: 100%;
+    }
   }
 }
 </style>

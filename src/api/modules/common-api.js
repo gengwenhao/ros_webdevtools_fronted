@@ -23,4 +23,4 @@ export const generateCode = (data) => axios.request({
 })
 
 // 代码下载地址
-export const generateCodeURL = (timestamp) => `${BASE_URL}api/generate_code/${timestamp}`
+export const generateCodeURL = (timestamp) => `${BASE_URL}/api/generate_code/${timestamp}`
