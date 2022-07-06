@@ -27,8 +27,8 @@
           </el-badge>
         </div>
 
-        <div class="icon-con" @click="saveSolution">
-          <el-tooltip class="item" effect="dark" content="保存代码" placement="bottom-start">
+        <div class="icon-con" @click="saveSolution('保存成功！', '空的工作空间无法保存解决方案')">
+          <el-tooltip class="item" effect="dark" content="保存解决方案" placement="bottom-start">
             <i class="iconfont icon-baocun"></i>
           </el-tooltip>
         </div>
@@ -51,11 +51,15 @@
       </div>
     </div>
 
-    <!-- 面板 -->
-    <div class="main-panel">
-      <!-- blockly显示区 -->
-      <div id="blocklyDiv"></div>
-    </div>
+    <blockly-workspace
+      ref="blockly-workspace"
+      v-if="isShowBlocklyWS"
+      :block-list="globalInfo.blockList"
+      :opt-settings="optOptions"
+      :toolbox-settings="toolbox"
+      :xml-code.sync="xmlCode"
+      :converted-code.sync="convertedCode"
+    />
 
     <!--  弹出层：自定义函数列表  -->
     <defined-block-lister
@@ -92,7 +96,6 @@
 <script>
 import 'blockly/python'
 import _ from 'lodash'
-import Blockly from 'blockly'
 import {mapState} from 'vuex'
 
 import api from '@/api'
@@ -104,25 +107,27 @@ import DefinedBlockLister from '@/components/defined-block/DefinedBlockLister'
 import RemoteMachineLister from '@/components/remote-machine/RemoteMachineLister'
 import CodeSender from '@/components/code-package/CodeSender'
 import CodePackager from '@/components/code-package/CodePackager'
+import BlocklyWorkspace from '@/components/blockly/BlocklyWorkspace'
 
 export default {
   name: "DevPanel",
 
-  components: {CodePackager, CodeSender, RemoteMachineLister, DefinedBlockLister, CodeTemplateLister},
+  components: {BlocklyWorkspace, CodePackager, CodeSender, RemoteMachineLister, DefinedBlockLister, CodeTemplateLister},
 
   data() {
     return {
-      //  Blockly 库相关
-      // Blockly 工作空间实例
-      blocklyWorkSpaceIns: null,
-      // Blockly 将图形转换成的python代码
-      convertedCode: null,
+      //  是否显示 Blockly 工作空间
+      isShowBlocklyWS: false,
+      // Blockly 图形代码
+      xmlCode: '',
+      // Blockly 图形代码生成的 python 代码
+      convertedCode: '',
       // Blockly 工具箱配置
       toolbox: config.blockly.DEFAULT_TOOLBOX_SETTINGS,
       // Blockly 其他配置
       optOptions: config.blockly.DEFAULT_OPT_OPTIONS,
       // 自动保存项目的定时器
-      autoSaveSolutionTimer: null
+      autosaveTimer: null
     }
   },
 
@@ -131,119 +136,24 @@ export default {
   },
 
   methods: {
-    // 初始化 blockly 工作空间
-    initBlocklyWS() {
-      // 清空工具箱
-      this.toolbox.contents[1].contents = []
-      this.globalInfo.blockList.forEach(data => {
-        // 将自定义函数加入toolbox中
-        this.toolbox.contents[1].contents.push({
-          kind: 'block',
-          type: data.name
-        })
-
-        // 创建自定义块的代码生成器
-        Blockly.Python[data.name] = function () {
-          return data.code + '\r\n' || ''
-        }
-
-        // 导入自定义块
-        Blockly.Blocks[data.name] = {
-          init: function () {
-            this.appendDummyInput()
-                .appendField(data.name)
-            this.setPreviousStatement(true, null)
-            this.setNextStatement(true, null)
-            this.setColour(230)
-            this.setTooltip(data.name)
-            this.setHelpUrl(data.name)
-          }
-        }
-      })
-
-      if (this.blocklyWorkSpaceIns) {
-        console.log('update toolbox')
-        this.blocklyWorkSpaceIns.updateToolbox(this.toolbox)
-      } else {
-        // init workspace instance
-        this.blocklyWorkSpaceIns = Blockly.inject('blocklyDiv', {
-          toolbox: this.toolbox,
-          ...this.optOptions
-        })
-
-        // bind event
-        this.blocklyWorkSpaceIns.addChangeListener(() => {
-          this.convertedCode = Blockly.Python.workspaceToCode(this.blocklyWorkSpaceIns)
-        })
-      }
-
-      return this.blocklyWorkSpaceIns
-    },
-
-    // 更新页面初始数据
-    fetchGlobalData() {
-      // 加载全局信息
-      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
-      this.$nextTick(() => {
-        this.initBlocklyWS()
-      })
-    },
-
     // 保存解决方案
-    saveSolution: _.debounce(function () {
+    saveSolution: _.debounce(function (successTips, emptyTips) {
       if (lib.isEmptyStr(this.convertedCode)) {
+        if (!lib.isEmptyStr(emptyTips)) {
+          this.$message.success(emptyTips)
+        }
+
         return -1
       }
 
-      api.solution.update({
-        code: lib.getBlocklyXMLText(this.blocklyWorkSpaceIns),
-        object_code: this.convertedCode
-      }, this.$route.query.solutionID).then(res => {
-        this.$message.success('保存成功')
-      })
+      api.solution
+         .update({code: this.xmlCode, object_code: this.convertedCode}, this.$route.query.solutionID)
+         .then((res) => {
+           this.$message.success(successTips)
+         })
     }, 1000),
 
-    // 自动保存解决方案
-    saveSolutionAuto() {
-      if (lib.isEmptyStr(this.convertedCode)) {
-        return -1
-      }
-
-      api.solution.update({
-        code: lib.getBlocklyXMLText(this.blocklyWorkSpaceIns),
-        object_code: this.convertedCode
-      }, this.$route.query.solutionID).then(res => {
-        this.$message.success('项目被自动保存')
-      })
-    },
-
-    // 加载解决方案
-    loadSolution() {
-      api.solution.get({}, this.$route.query.solutionID)
-         .then(res => {
-           this.isShowOpenProjectPanel = false
-           this.isLoading = true
-           lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
-           setTimeout(() => {
-             this.isLoading = false
-             lib.blocklyXMLToDOM(res.data.code, this.blocklyWorkSpaceIns)
-             this.$message.success('导入成功')
-           }, 400)
-         })
-    },
-
-    // 清空工作区事件
-    handleClearWorkspace() {
-      this.$confirm('是否清空工作环境？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        lib.clearBlocklyWorkspace(this.blocklyWorkSpaceIns)
-      })
-    },
-
-    // 代码生成成功
+    // 代码打包 成功事件
     handleCodePackagerSuccess(data) {
       if (!this.convertedCode) {
         this.$message.error('空的工作空间无法生成代码')
@@ -264,26 +174,53 @@ export default {
   },
 
   created() {
-    this.loadSolution()
-    this.fetchGlobalData()
-    this.autoSaveSolutionTimer = setInterval(() => {
-      this.saveSolutionAuto()
-    }, 1000 * 60 * 2) // 2分钟自动保存一次
+    // 加载解决方案信息
+    api.solution
+       .get({}, this.$route.query.solutionID)
+       .then(res => {
+         this.xmlCode = res.data.code
+         this.isShowBlocklyWS = true
+       })
+       .catch(err => {
+         this.$router.push({name: '404'})
+       })
+
+    // 加载全局信息
+    this.$store.dispatch('updateGlobalInfo', {
+      solutionID: this.$route.query.solutionID
+    })
+
+    // 2 分钟自动保存解决方案一次
+    this.autosaveTimer = setInterval(() => {
+      this.saveSolution('自动保存成功!')
+    }, 1000 * 60 * 2)
+  },
+
+  destroyed() {
+    if (this.autosaveTimer) {
+      clearInterval(this.autosaveTimer)
+    }
+    this.autosaveTimer = null
   },
 
   beforeRouteEnter(to, from, next) {
     next(vm => {
 
       // 检查路由传入的 solutionID 是否合法
-      if (vm.$route.query.solutionID) {
-        api.solution.get({}, vm.$route.query.solutionID).catch(err => {
-          vm.$router.push({name: '404'})
-        })
-      } else {
+      if (!vm.$route.query.solutionID) {
         vm.$router.push({name: '404'})
       }
 
     })
+  },
+
+  beforeRouteLeave(to, from, next) {
+    if (this.autosaveTimer) {
+      clearInterval(this.autosaveTimer)
+    }
+    this.autosaveTimer = null
+
+    next()
   }
 }
 </script>
@@ -335,17 +272,6 @@ export default {
         }
       }
 
-    }
-  }
-
-  // 主面板
-  .main-panel {
-    width: 100vw;
-    height: calc(100vh - 130px);
-
-    #blocklyDiv {
-      width: 100%;
-      height: 100%;
     }
   }
 }

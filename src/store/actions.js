@@ -16,7 +16,6 @@ export default {
       ]
 
       Promise.all(apiList).then(res => {
-        console.log(res)
         const data = {
           ...res[0].data || {},
           blockList: res[1].data.results || [],
