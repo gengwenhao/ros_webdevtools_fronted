@@ -7,11 +7,6 @@
       <div class="title" @click="$router.push({name: 'solutionList'})">
         ROS WEB DEVTOOLS
       </div>
-      <div class="tools">
-        <!--        <el-button round type="primary" v-if="!isConnected" @click="isConnected = true">Connect</el-button>-->
-        <!--        <el-button round icon="el-icon-connection" type="warning" v-else @click="isConnected = false">Connected-->
-        <!--        </el-button>-->
-      </div>
     </div>
   </div>
 </template>
@@ -41,7 +36,7 @@ export default {
   padding: 0 32px;
 
   .inner-con {
-    width: 100%;
+    width: 190px;
     user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;

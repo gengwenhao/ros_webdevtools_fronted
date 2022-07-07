@@ -25,9 +25,9 @@
         <el-table-column prop="port" align="center" label="端口"/>
         <el-table-column prop="add_time" align="center" label="添加时间"/>
         <el-table-column prop="update_time" align="center" label="更新时间"/>
-        <el-table-column label="操作" align="center" width="250px">
+        <el-table-column label="操作" align="center" width="280px">
           <template v-slot="scope">
-            <el-button type="primary" @click="handleOpenTerm(scope.row)">连接 SSH</el-button>
+            <el-button type="primary" @click="handleOpenTerm(scope.row)">WebSSH</el-button>
             <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -120,7 +120,6 @@ export default {
            })
       })
     },
-
 
     handleAdderSuccess(data) {
       this.$message.success('该配置已添加完成！')
