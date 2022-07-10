@@ -5,9 +5,6 @@
 </p>
 <h3 align="center">图形化模块编程的机器人控制方法</h3>
 <p align="center">
-	<a href="//github.com/gengwenhao/ros_webdevtools_fronted">
-<img src="https://img.shields.io/github/license/gengwenhao/ros_webdevtools_fronted" alt="License">
-</a>
 <a href="//github.com/gengwenhao/ros_webdevtools_fronted">
 <img src="https://img.shields.io/github/repo-size/gengwenhao/ros_webdevtools_fronted">
 </a> 
@@ -24,12 +21,12 @@
 
 > 基于 ROS 的图形化模块机器人编程工具
 
-## 项目源码
+## 项目源代码
 
-前端部分源码
+前端源代码
 [Github](http://github.com/gengwenhao/ros_webdevtools_fronted/) [码云](http://gitee.com/gengwenhao/ros_webdevtools_fronted/)
 
-后端源码
+后端源代码
 [Github](http://github.com/gengwenhao/ros_webdevtools_api/) [码云](http://gitee.com/gengwenhao/ros_webdevtools_api/)
 
 ![首页预览](screenshots/应用开场动画.png)
