@@ -37,15 +37,35 @@
             align="center"
             fixed="right"
             label="操作"
-            width="250"
+            width="270"
           >
             <template v-slot="$scope">
+              <el-popover
+                v-if="$scope.row.is_init"
+                placement="top"
+                width="300"
+              >
+                <p>进入解决方案后，请先通过上方导航栏： 添加模板，自定义函数，机器人连接配置。
+                </p>
+                <div style="text-align: right; margin: 0">
+                  <el-button size="mini" type="info" @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">确定</el-button>
+                </div>
+                <el-button
+                  icon="el-icon-question"
+                  size="small"
+                  slot="reference"
+                  style="margin-right: 10px;"
+                  type="info"
+                  @click="">了解解决方案
+                </el-button>
+              </el-popover>
               <el-button
-                icon="el-icon-warning-outline"
+                v-else
+                icon="el-icon-success"
                 plain
                 size="small"
                 type="info"
-                @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">进入
+                @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">进入解决方案
               </el-button>
               <el-button
                 icon="el-icon-delete"
@@ -130,6 +150,16 @@ export default {
   },
 
   destroyed() {
+    this.$shortcut.unbind('ctrl+alt+n')
+  },
+
+  activated() {
+    this.$shortcut.bind('ctrl+alt+n', () => {
+      this.$refs['solution-adder'].isShow = !this.$refs['solution-adder'].isShow
+    })
+  },
+
+  deactivated() {
     this.$shortcut.unbind('ctrl+alt+n')
   },
 

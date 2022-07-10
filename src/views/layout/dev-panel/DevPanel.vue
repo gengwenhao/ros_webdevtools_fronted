@@ -205,6 +205,10 @@ export default {
          this.$router.push({name: '404'})
        })
 
+    // 将解决方案标记为已使用过
+    api.solution
+       .init(this.$route.query.solutionID)
+
     // 加载全局信息
     this.$store.dispatch('updateGlobalInfo', {
       solutionID: this.$route.query.solutionID

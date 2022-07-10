@@ -1,5 +1,10 @@
 <template>
-  <div :id="id" class="opening-animation" v-if="isShow">
+  <div
+    v-if="isShow"
+    :id="id"
+    class="opening-animation"
+    @dblclick="isShow = false"
+  >
     <div class="container">
       <div class="inner" :class="{play:isPlay}">
         <img

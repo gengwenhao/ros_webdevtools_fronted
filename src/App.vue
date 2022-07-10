@@ -7,7 +7,13 @@
 <script>
 
 export default {
-  name: 'App'
+  name: 'App',
+
+  created() {
+    this.$shortcut.bind('ctrl+alt+home', () => {
+      this.$router.push({name: 'home'})
+    })
+  }
 }
 </script>
 

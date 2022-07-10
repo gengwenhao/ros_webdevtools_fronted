@@ -34,3 +34,9 @@ export const remove = (params, id) => axios.request({
   method: 'delete',
   params
 })
+
+// 初始化解决方案
+export const init = (id) => axios.request({
+  url: `/api/solution_init/?solutionID=${id}`,
+  method: 'post'
+})
