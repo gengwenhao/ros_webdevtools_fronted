@@ -5,41 +5,69 @@
     <div class="con">
       <div
         v-if="tableData && tableData.length > 0"
-        :style="{padding: '23px', width: 'calc(100vw - 100px)', height: 'calc(100vh - 100px)', margin: 'auto'}">
-        <el-button
-          icon="el-icon-plus"
-          type="primary"
-          :style="{marginBottom: '12px'}"
-          @click="$refs['solution-adder'].isShow = true"
-        >创建新的解决方案
-        </el-button>
+        :style="{padding: '23px', width: 'calc(100vw - 100px)', height: 'calc(100vh - 100px)', margin: 'auto'}"
+      >
+
+        <el-tooltip
+          effect="dark"
+          content="Ctrl+Alt+N"
+          placement="right-start"
+        >
+          <el-button
+            icon="el-icon-plus"
+            type="primary"
+            :style="{marginBottom: '12px'}"
+            @click="$refs['solution-adder'].isShow = true"
+          >创建新的解决方案
+          </el-button>
+        </el-tooltip>
+
         <el-table
           border
           height="90%"
           size="small"
           :data="tableData"
         >
-          <el-table-column prop="title" label="名称" align="center"/>
-          <el-table-column fixed="right" label="操作" align="center">
-            <template slot-scope="$scope">
-              <el-button type="info" size="small" plain icon="el-icon-warning-outline"
-                         @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">进入
+          <el-table-column
+            align="center"
+            label="名称"
+            prop="title"
+          />
+          <el-table-column
+            align="center"
+            fixed="right"
+            label="操作"
+            width="250"
+          >
+            <template v-slot="$scope">
+              <el-button
+                icon="el-icon-warning-outline"
+                plain
+                size="small"
+                type="info"
+                @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">进入
               </el-button>
-              <el-button type="danger" size="small" plain icon="el-icon-delete"
-                         @click="handleSolutionDelete($scope.row)">删除
+              <el-button
+                icon="el-icon-delete"
+                plain
+                size="small"
+                type="danger"
+                @click="handleSolutionDelete($scope.row)">删除
               </el-button>
             </template>
           </el-table-column>
         </el-table>
+
         <el-pagination
           layout="total, prev, pager, next, jumper"
           style="margin-top: 12px;"
           :current-page="controlsForm.pageIndex"
           :total="total"
-          :page-size="controlsForm.pageSize"/>
+          :page-size="controlsForm.pageSize"
+        />
       </div>
 
-      <!-- 没有解决方案动画展示 -->
+      <!-- 没有解决方案展示 SVG 大图 -->
       <div class="tips" v-else @click="$refs['solution-adder'].isShow = true">
         <h1>No solution is available</h1>
         <svg t="1647952913452" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
@@ -50,7 +78,6 @@
             fill="#d4237a" fill-opacity=".65" p-id="5604"></path>
         </svg>
       </div>
-
     </div>
 
     <!-- 创建解决方案面板 -->
@@ -60,10 +87,12 @@
       @error="$message.error"
     />
 
+    <!-- 全屏开场动画 -->
     <opening-animation
       v-if="!hasShowAnimation"
       :hasShow.sync="hasShowAnimation"
-      />
+    />
+
   </div>
 </template>
 
@@ -92,6 +121,16 @@ export default {
       },
       newSolutionName: '',
     }
+  },
+
+  created() {
+    this.$shortcut.bind('ctrl+alt+n', () => {
+      this.$refs['solution-adder'].isShow = !this.$refs['solution-adder'].isShow
+    })
+  },
+
+  destroyed() {
+    this.$shortcut.unbind('ctrl+alt+n')
   },
 
   methods: {

@@ -8,6 +8,7 @@ import Bus from '@/lib/bus'
 import Api from '@/api/install'
 import router from '@/router'
 import store from '@/store'
+import '@/plugins/key-manager'
 // import css
 import 'semantic-ui-css/semantic.min.css'
 import 'element-ui/lib/theme-chalk/index.css'

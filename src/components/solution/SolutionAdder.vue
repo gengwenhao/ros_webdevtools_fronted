@@ -4,13 +4,16 @@
       center
       title="创建新的解决方案"
       :visible.sync="isShow"
+      @open="handleOpen"
       @close="handleClose"
     >
       <el-input
+        autofocus
         clearable
         max="32"
         min="1"
         placeholder="请输入解决方案名称"
+        ref="input-solution-name"
         size="mini"
         style="margin-bottom: 4px"
         v-model="newSolutionName"
@@ -62,6 +65,12 @@ export default {
 
     handleSolutionAdderCancel() {
       this.isShow = false
+    },
+
+    handleOpen() {
+      this.$nextTick(() => {
+        this.$refs['input-solution-name'].$el.querySelector('input').focus()
+      })
     },
 
     handleClose() {

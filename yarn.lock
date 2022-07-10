@@ -5298,6 +5298,11 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+keymaster@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.npmjs.org/keymaster/-/keymaster-1.6.2.tgz#e1ae54d0ea9488f9f60b66b668f02e9a1946c6eb"
+  integrity sha512-OvA/AALN8IDKKkTk2Z+bDrzs/SQao4lo/QPbwSdDvm+frxfiYiYCSn1aHFUypJY3SruAO1y/c771agBmTXqUtg==
+
 keyv@3.0.0:
   version "3.0.0"
   resolved "https://registry.npmmirror.com/keyv/-/keyv-3.0.0.tgz"

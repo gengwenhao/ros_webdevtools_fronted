@@ -3,7 +3,7 @@
   <div class="code-sender">
     <el-dialog
       center
-      title="请选择生成参数"
+      title="请配置代码发送参数"
       :visible.sync="isShow"
       @open="handleOpen"
     >

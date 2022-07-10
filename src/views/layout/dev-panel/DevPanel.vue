@@ -5,7 +5,7 @@
       <div class="icon-group">
         <div class="icon-con" @click="$refs['code-template-lister'].isShow = true">
           <el-badge :value="globalInfo.templateCnt">
-            <el-tooltip class="item" effect="dark" content="新建代码生成模板" placement="bottom-start">
+            <el-tooltip class="item" effect="dark" content="新建代码生成模板 Ctrl+Alt+T" placement="bottom-start">
               <i class="iconfont icon-template"></i>
             </el-tooltip>
           </el-badge>
@@ -13,7 +13,7 @@
 
         <div class="icon-con" @click="$refs['defined-block-lister'].isShow = true">
           <el-badge :value="globalInfo.blocklyFunctionCnt">
-            <el-tooltip class="item" effect="dark" content="新建自定义函数" placement="bottom-start">
+            <el-tooltip class="item" effect="dark" content="新建自定义函数 Ctrl+Alt+B" placement="bottom-start">
               <i class="iconfont icon-chuangjianjiedian"></i>
             </el-tooltip>
           </el-badge>
@@ -21,26 +21,26 @@
 
         <div class="icon-con" @click="$refs['remote-machine-lister'].isShow = true">
           <el-badge :value="globalInfo.remoteMachineCnt">
-            <el-tooltip class="item" effect="dark" content="新建机器人连接配置" placement="bottom-start">
+            <el-tooltip class="item" effect="dark" content="新建机器人连接配置 Ctrl+Alt+I" placement="bottom-start">
               <i class="iconfont icon-jiqiren"></i>
             </el-tooltip>
           </el-badge>
         </div>
 
         <div class="icon-con" @click="saveSolution('保存成功！', '空的工作空间无法保存解决方案')">
-          <el-tooltip class="item" effect="dark" content="保存解决方案" placement="bottom-start">
+          <el-tooltip class="item" effect="dark" content="保存到云端 Ctrl+Alt+S" placement="bottom-start">
             <i class="iconfont icon-baocun"></i>
           </el-tooltip>
         </div>
 
         <div class="icon-con" @click="$refs['code-packager'].isShow = true">
-          <el-tooltip class="item" effect="dark" content="打包代码" placement="bottom-start">
+          <el-tooltip class="item" effect="dark" content="打包代码 Ctrl+Alt+P" placement="bottom-start">
             <i class="iconfont icon-dabaoxiazai"></i>
           </el-tooltip>
         </div>
 
         <div class="icon-con" @click="$refs['code-sender'].isShow = true">
-          <el-tooltip class="item" effect="dark" content="发送代码" placement="bottom-start">
+          <el-tooltip class="item" effect="dark" content="发送代码 Ctrl+Alt+Enter" placement="bottom-start">
             <i class="iconfont icon-icon_sent"></i>
           </el-tooltip>
         </div>
@@ -174,6 +174,26 @@ export default {
   },
 
   created() {
+    // 添加热键
+    this.$shortcut.bind('ctrl+alt+t', () => {
+      this.$refs['code-template-lister'].isShow = true
+    })
+    this.$shortcut.bind('ctrl+alt+b', () => {
+      this.$refs['defined-block-lister'].isShow = true
+    })
+    this.$shortcut.bind('ctrl+alt+i', () => {
+      this.$refs['remote-machine-lister'].isShow = true
+    })
+    this.$shortcut.bind('ctrl+alt+s', () => {
+      this.saveSolution('保存成功！', '空的工作空间无法保存解决方案')
+    })
+    this.$shortcut.bind('ctrl+alt+p', () => {
+      this.$refs['code-packager'].isShow = true
+    })
+    this.$shortcut.bind('ctrl+alt+enter', () => {
+      this.$refs['code-sender'].isShow = true
+    })
+
     // 加载解决方案信息
     api.solution
        .get({}, this.$route.query.solutionID)
@@ -197,6 +217,17 @@ export default {
   },
 
   destroyed() {
+    // 移除热键
+    this.$shortcut.unbind([
+      'ctrl+alt+t',
+      'ctrl+alt+b',
+      'ctrl+alt+i',
+      'ctrl+alt+s',
+      'ctrl+alt+p',
+      'ctrl+alt+enter'
+    ].join())
+
+    // 移除解决方案自动保存定时器
     if (this.autosaveTimer) {
       clearInterval(this.autosaveTimer)
     }
