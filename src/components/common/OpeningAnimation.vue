@@ -12,7 +12,7 @@
           :src="require('@/assets/robot-line.png')"
           onmousedown="return false;"
         >
-        <span>ROS WEV Devtools</span>
+        <span>ROS Web Devtools</span>
       </div>
     </div>
   </div>
