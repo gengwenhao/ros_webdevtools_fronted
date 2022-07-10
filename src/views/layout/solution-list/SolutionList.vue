@@ -1,8 +1,8 @@
 <template>
-  <div id="solution-list" v-loading="isLoading">
+  <div id="solution-list">
 
     <!-- 解决方案表格容器 -->
-    <div class="con" v-show="!isLoading">
+    <div class="con">
       <div
         v-if="tableData && tableData.length > 0"
         :style="{padding: '23px', width: 'calc(100vw - 100px)', height: 'calc(100vh - 100px)', margin: 'auto'}">
@@ -60,6 +60,10 @@
       @error="$message.error"
     />
 
+    <opening-animation
+      v-if="!hasShowAnimation"
+      :hasShow.sync="hasShowAnimation"
+      />
   </div>
 </template>
 
@@ -68,15 +72,18 @@ import api from '@/api'
 import config from '@/config'
 import commonElTable from '@/mixins/common-el-table'
 import SolutionAdder from '@/components/solution/SolutionAdder'
+import OpeningAnimation from '@/components/common/OpeningAnimation'
 
 export default {
   name: "SolutionList",
-  components: {SolutionAdder},
+
+  components: {OpeningAnimation, SolutionAdder},
+
   mixins: [commonElTable],
 
   data() {
     return {
-      isLoading: false,
+      hasShowAnimation: false,
       isShowSolutionAdder: false,
       controlsForm: {
         pageIndex: 1,
@@ -89,7 +96,6 @@ export default {
 
   methods: {
     fetchTableData() {
-      this.isLoading = true
       api.solution
          .list(this.form)
          .then(res => {

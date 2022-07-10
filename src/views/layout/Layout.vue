@@ -1,7 +1,11 @@
 <template>
   <div id="layout">
     <common-header class="common-header"/>
-    <router-view/>
+    <keep-alive>
+      <router-view v-if="$route.meta.keepAlive" :key="$route.path + $route.query.solutionID || ''"/>
+    </keep-alive>
+
+    <router-view v-if="!$route.meta.keepAlive"/>
   </div>
 </template>
 

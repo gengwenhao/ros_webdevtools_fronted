@@ -18,7 +18,8 @@ export default [
         name: 'solutionList',
         component: SolutionList,
         meta: {
-          title: 'Solution List | ROS WEB DEVTOOLS'
+          title: 'Solution List | ROS WEB DEVTOOLS',
+          keepAlive: true
         }
       },
       {

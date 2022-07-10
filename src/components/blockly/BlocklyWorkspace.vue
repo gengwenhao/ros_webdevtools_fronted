@@ -82,6 +82,17 @@ export default {
     }
   },
 
+  watch: {
+    blockList: {
+      handler(val, oldVal) {
+        if (val.length !== oldVal.length) {
+          this.updateToolbox()
+        }
+      },
+      deep: true
+    }
+  },
+
   methods: {
     // 刷新 blockly 工作空间
     updateBlocklyWS() {
