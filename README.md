@@ -33,8 +33,6 @@
 [Github](http://github.com/gengwenhao/ros_webdevtools_api/) [码云](http://gitee.com/gengwenhao/ros_webdevtools_api/)
 
 ![首页预览](screenshots/应用开场动画.png)
-![解决方案页面预览](screenshots/解决方案页面.png)
-![开发页面预览](screenshots/开发页面.png)
 ![机器人连接配置预览](screenshots/机器人连接配置.png)
 
 介绍
