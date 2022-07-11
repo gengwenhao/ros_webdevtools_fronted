@@ -85,6 +85,13 @@ import {isEmptyStr} from '@/lib/tools'
 export default {
   name: "CodeSender",
 
+  props: {
+    code: {
+      type: String,
+      default: ''
+    }
+  },
+
   data() {
     return {
       isShow: false,
@@ -113,11 +120,14 @@ export default {
         return -1
       }
 
+
       const form = {
         name: this.name,
         remote_machine: this.remote_machine,
         templateID: this.templateID,
-        run: this.run
+        run: this.run,
+        solutionID: this.$route.query.solutionID || null,
+        code: this.code
       }
 
       api.commonAPI

@@ -79,6 +79,7 @@
     <!-- 弹出层：代码发送 -->
     <code-sender
       ref="code-sender"
+      :code="convertedCode"
       @success="$message.success"
       @error="$message.error"
     />
