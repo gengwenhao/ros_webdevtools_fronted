@@ -6,7 +6,7 @@
 <script>
 import 'xterm/dist/xterm.css'
 import {Terminal} from 'xterm'
-import {WS_URL} from '@/config'
+import {WS_HOST} from '@/config'
 
 export default {
   name: "CommandPanel",
@@ -16,7 +16,7 @@ export default {
       term: null,
       fitAddon: null,
       socket: null,
-      socketURI: `${WS_URL}/ssh?id=${this.$route.query.id}`
+      socketURI: `${WS_HOST}/ssh?id=${this.$route.query.id}`
     }
   },
 
