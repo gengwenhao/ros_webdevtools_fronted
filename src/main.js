@@ -1,18 +1,15 @@
 // import module
 import Vue from 'vue'
 import App from './App.vue'
-import SuiVue from 'semantic-ui-vue'
-import ElementUI from 'element-ui'
-import Toast from "vue-toastification"
 import Bus from '@/lib/bus'
 import Api from '@/api/install'
 import router from '@/router'
 import store from '@/store'
 import '@/plugins/key-manager'
-// import css
-import 'semantic-ui-css/semantic.min.css'
-import 'element-ui/lib/theme-chalk/index.css'
-import 'vue-toastification/dist/index.css'
+import '@/plugins/element'
+import '@/plugins/semantic-ui'
+import '@/plugins/vue-toastification'
+import { createPinia, PiniaVuePlugin } from 'pinia'
 
 // config
 Vue.config.productionTip = false
@@ -28,18 +25,13 @@ Vue.config.ignoredElements.push('mutation')
 // vue use
 Vue.use(Api)
 Vue.use(Bus)
-Vue.use(SuiVue)
-Vue.use(ElementUI, {
-  size: 'mini'
-})
-Vue.use(Toast, {
-  position: 'bottom-right',
-  timeout: 2500
-})
+Vue.use(PiniaVuePlugin)
+const pinia = createPinia()
 
 // create instance and mounted
 new Vue({
   router,
   store,
+  pinia,
   render: h => h(App)
 }).$mount('#app')
