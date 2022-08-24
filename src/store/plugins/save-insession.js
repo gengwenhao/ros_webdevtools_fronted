@@ -1,4 +1,4 @@
-const saveInSessionStorage = store => {
+const saveInsession = store => {
   if (sessionStorage.state) {
     // 从 sessionStorage 中读取 state
     store.replaceState(JSON.parse(sessionStorage.state))
@@ -10,4 +10,4 @@ const saveInSessionStorage = store => {
   }))
 }
 
-export default saveInSessionStorage
+export default saveInsession

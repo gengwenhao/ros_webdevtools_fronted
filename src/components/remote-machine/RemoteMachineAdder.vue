@@ -15,14 +15,14 @@
           />
         </el-form-item>
 
-        <el-form-item label="IP地址">
-          <el-input size="mini" clearable placeholder="请输入IP地址" min="1" max="32"
+        <el-form-item label="设备IP地址">
+          <el-input size="mini" clearable placeholder="请输入网络IP地址" min="1" max="32"
                     v-model="form.ip"
           />
         </el-form-item>
 
-        <el-form-item label="端口号">
-          <el-input size="mini" clearable placeholder="请输入端口号" min="1" max="32"
+        <el-form-item label="设备端口号">
+          <el-input size="mini" clearable placeholder="请输入服务端口号" min="1" max="32"
                     v-model="form.port"
                     @keypress.enter.native="handleConfirm"
           />

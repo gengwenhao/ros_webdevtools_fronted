@@ -2,6 +2,8 @@
   <div id="dev-panel">
     <!-- 按钮组 -->
     <div class="icon-group-con">
+
+      <!-- 左侧按钮组 -->
       <div class="icon-group">
         <div class="icon-con" @click="$refs['code-template-lister'].isShow = true">
           <el-badge :value="globalInfo.templateCnt">
@@ -27,26 +29,41 @@
           </el-badge>
         </div>
 
+        <div class="icon-con">
+          <el-tooltip class="item" effect="dark" content="分享工作空间 Ctrl+Alt+Q" placement="bottom-start">
+            <i class="iconfont icon-fenxiang1"></i>
+          </el-tooltip>
+        </div>
+
         <div class="icon-con" @click="saveSolution('保存成功！', '工作空间内 暂无任何内容')">
-          <el-tooltip class="item" effect="dark" content="保存到云端 Ctrl+Alt+S" placement="bottom-start">
+          <el-tooltip class="item" effect="dark" content="保存工作空间到云端 Ctrl+Alt+S" placement="bottom-start">
             <i class="iconfont icon-baocun"></i>
           </el-tooltip>
         </div>
-      </div>
 
-      <div class="icon-group">
+        <div class="icon-con">
+          <el-tooltip class="item" effect="dark" content="推送工作空间 Ctrl+Alt+U" placement="bottom-start">
+            <i class="iconfont icon-shuaxin1"></i>
+          </el-tooltip>
+        </div>
+
+        <div class="icon-con" @click="$refs['code-sender'].isShow = true">
+          <el-tooltip class="item" effect="dark" content="发送代码给机器人 Ctrl+Alt+Enter" placement="bottom-start">
+            <i class="iconfont icon-icon_sent"></i>
+          </el-tooltip>
+        </div>
+
         <div class="icon-con" @click="$refs['code-packager'].isShow = true">
           <el-tooltip class="item" effect="dark" content="打包代码 Ctrl+Alt+P" placement="bottom-start">
             <i class="iconfont icon-dabaoxiazai"></i>
           </el-tooltip>
         </div>
-
-        <div class="icon-con" @click="$refs['code-sender'].isShow = true">
-          <el-tooltip class="item" effect="dark" content="发送代码 Ctrl+Alt+Enter" placement="bottom-start">
-            <i class="iconfont icon-icon_sent"></i>
-          </el-tooltip>
-        </div>
       </div>
+
+      <!-- 右侧按钮组 -->
+      <div class="icon-group">
+      </div>
+
     </div>
 
     <blockly-workspace
