@@ -1,6 +1,3 @@
-import DevPanel from "@/views/layout/dev-panel/DevPanel"
-import SolutionList from "@/views/layout/solution-list/SolutionList"
-import CommandPanel from "@/views/layout/command-panel/CommandPanel"
 import Layout from '@/views/layout/Layout'
 
 export default [
@@ -16,7 +13,7 @@ export default [
       {
         path: '/solution-list',
         name: 'solutionList',
-        component: SolutionList,
+        component: () => import('@/views/layout/solution-list/SolutionList'),
         meta: {
           title: 'Solution List | ROS WEB DEVTOOLS',
           keepAlive: true
@@ -25,7 +22,7 @@ export default [
       {
         path: '/dev-panel',
         name: 'devPanel',
-        component: DevPanel,
+        component: () => import('@/views/layout/dev-panel/DevPanel'),
         meta: {
           title: 'Development Panel | ROS WEB DEVTOOLS'
         }
@@ -33,7 +30,7 @@ export default [
       {
         path: '/command-panel',
         name: 'commandPanel',
-        component: CommandPanel,
+        component: () => import('@/views/layout/command-panel/CommandPanel'),
         meta: {
           title: 'Command Panel | ROS WEB DEVTOOLS'
         }
