@@ -3,9 +3,9 @@
   <div class="remote-machine-lister">
     <el-dialog
       center
-      title="机器人连接配置列表"
+      title="机器人连接配置"
+      width="900px"
       :visible.sync="isShow"
-      width="70%"
     >
 
       <el-button
@@ -20,14 +20,32 @@
         style="width: 100%; max-height: 400px; overflow-y: auto"
         :data="tableData"
       >
-        <el-table-column prop="name" align="center" label="机器人名称"/>
-        <el-table-column prop="ip" align="center" label="IP"/>
-        <el-table-column prop="port" align="center" label="端口"/>
-        <el-table-column prop="add_time" align="center" label="添加时间"/>
-        <el-table-column prop="update_time" align="center" label="更新时间"/>
+        <el-table-column prop="name" align="center" label="机器人名称">
+          <template v-slot="scope">
+            <el-tag>{{ scope.row.name }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="ip" align="center" label="IP" width="100">
+          <template v-slot="scope">
+            <el-tag effect="dark" type="primary">{{ scope.row.ip }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="port" align="center" label="端口" width="80">
+          <template v-slot="scope">
+            <el-tag effect="dark" type="danger">{{ scope.row.port }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="add_time" align="center" label="添加时间" width="140"/>
+        <el-table-column prop="update_time" align="center" label="更新时间" width="140"/>
         <el-table-column label="操作" align="center" width="280px">
           <template v-slot="scope">
-            <el-button type="primary" @click="handleOpenTerm(scope.row)">WebSSH</el-button>
+            <el-button
+              icon="iconfont icon-terminal1"
+              type="primary"
+              @click="handleOpenTerm(scope.row)"
+            >
+              WebSSH
+            </el-button>
             <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
           </template>
@@ -39,7 +57,7 @@
         style="margin-top: 12px;"
         :current-page="controlsForm.page"
         :page-size="controlsForm.page_size"
-        :total="total"
+        :total="count"
         @current-change="handleCurrentChange"
       />
 
@@ -88,7 +106,7 @@ export default {
       api.remoteMachine
          .list({solutionID: this.$route.query.solutionID, ...this.controlsForm})
          .then(res => {
-           this.total = res.data.count
+           this.count = res.data.count
            this.tableData = res.data.results
          })
          .catch(err => {

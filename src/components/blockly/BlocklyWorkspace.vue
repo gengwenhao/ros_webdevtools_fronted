@@ -17,14 +17,14 @@ export default {
 
   props: {
     /**
-     * 容器默认的宽度样式属性
+     * 容器的宽度样式
      */
     width: {
       type: String,
       default: '100%'
     },
     /**
-     * 容器默认的高度样式属性
+     * 容器的高度样式
      */
     height: {
       type: String,
@@ -159,9 +159,7 @@ export default {
 
     // 清空工作区
     clearWorkspace() {
-      if (this.blocklyWorkSpaceIns) {
-        this.blocklyWorkSpaceIns.clear()
-      }
+      this.blocklyWorkSpaceIns && this.blocklyWorkSpaceIns.clear()
     },
 
     // 获得 blockly 工作区转换出来的 python 代码

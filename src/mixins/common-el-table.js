@@ -3,7 +3,7 @@ const commonElTable = {
   data() {
     return {
       // 数据量
-      total: 0,
+      count: 0,
       // 表格绑定的数据
       tableData: [],
       // 表格选中

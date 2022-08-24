@@ -27,7 +27,6 @@ export default {
 
 #common-header {
   height: 50px;
-  //background: $primary-color-dark;
   background: #333333;
   display: flex;
   flex-direction: row;
@@ -36,7 +35,6 @@ export default {
   padding: 0 32px;
 
   .inner-con {
-    width: 190px;
     user-select: none;
     -webkit-user-select: none;
     -ms-user-select: none;

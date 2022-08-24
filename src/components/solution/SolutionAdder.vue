@@ -3,15 +3,15 @@
     <el-dialog
       center
       title="创建新的解决方案"
+      width="500px"
       :visible.sync="isShow"
       @open="handleOpen"
       @close="handleClose"
     >
       <el-input
-        autofocus
         clearable
-        max="32"
-        min="1"
+        maxlength="32"
+        minlength="1"
         placeholder="请输入解决方案名称"
         ref="input-solution-name"
         size="mini"

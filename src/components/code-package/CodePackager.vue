@@ -4,6 +4,7 @@
     <el-dialog
       center
       title="请配置代码打包参数"
+      width="600px"
       :visible.sync="isShow"
       @open="handleOpen"
     >
@@ -84,7 +85,7 @@ export default {
     },
 
     handleOpen() {
-      this.templateID = this.globalInfo.templateList[0].id || null
+      this.templateID = this.globalInfo?.templateList[0]?.id
     }
   }
 }

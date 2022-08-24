@@ -7,7 +7,6 @@ import router from '@/router'
 import store from '@/store'
 import '@/plugins/key-manager'
 import '@/plugins/element'
-import '@/plugins/semantic-ui'
 import '@/plugins/vue-toastification'
 import { createPinia, PiniaVuePlugin } from 'pinia'
 

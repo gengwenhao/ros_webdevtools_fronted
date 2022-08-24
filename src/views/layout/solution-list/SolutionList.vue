@@ -43,12 +43,23 @@
               <el-popover
                 v-if="$scope.row.is_init"
                 placement="top"
-                width="300"
+                width="340"
               >
-                <p>进入解决方案后，请先通过上方导航栏： 添加模板，自定义函数，机器人连接配置。
+                <p>进入解决方案后，请先依次点击导航栏上的：<br/><br/>
+                  <span style="font-weight: bold;font-size: 16px;">
+                    <i class="iconfont icon-daimaji"></i>&nbsp;添加模板，<br/>
+                    <i class="iconfont icon-block"></i>&nbsp;自定义函数，<br/>
+                    <i class="iconfont icon-jiqiren"></i>&nbsp;机器人连接配置
+                  </span>。
                 </p>
                 <div style="text-align: right; margin: 0">
-                  <el-button size="mini" type="info" @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">确定</el-button>
+                  <el-button
+                    size="mini"
+                    type="info"
+                    @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})"
+                  >
+                    已了解，进入解决方案
+                  </el-button>
                 </div>
                 <el-button
                   icon="el-icon-question"
@@ -56,7 +67,7 @@
                   slot="reference"
                   style="margin-right: 10px;"
                   type="info"
-                  @click="">了解解决方案
+                  @click="">了解使用方法
                 </el-button>
               </el-popover>
               <el-button
@@ -82,7 +93,7 @@
           layout="total, prev, pager, next, jumper"
           style="margin-top: 12px;"
           :current-page="controlsForm.pageIndex"
-          :total="total"
+          :total="count"
           :page-size="controlsForm.pageSize"
         />
       </div>
@@ -100,7 +111,7 @@
       </div>
     </div>
 
-    <!-- 创建解决方案面板 -->
+    <!-- 弹出层：创建解决方案 -->
     <solution-adder
       ref="solution-adder"
       @success="handleAdderSuccess"

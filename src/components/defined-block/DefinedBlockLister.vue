@@ -3,7 +3,8 @@
   <div class="defined-block-lister">
     <el-dialog
       center
-      title="该解决方案的自定义函数列表"
+      title="自定义函数"
+      width="700px"
       :visible.sync="isShow"
     >
 
@@ -19,7 +20,11 @@
         style="width: 100%; max-height: 400px; overflow-y: auto"
         :data="tableData"
       >
-        <el-table-column prop="name" align="center" label="函数名称"/>
+        <el-table-column prop="name" align="center" label="函数名称">
+          <template v-slot="scope">
+            <el-tag>{{ scope.row.name }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="add_time" align="center" label="添加时间"/>
         <el-table-column prop="update_time" align="center" label="更新时间"/>
         <el-table-column label="操作" align="center" width="200px">
@@ -35,7 +40,7 @@
         style="margin-top: 12px;"
         :current-page="controlsForm.page"
         :page-size="controlsForm.page_size"
-        :total="total"
+        :total="count"
         @current-change="handleCurrentChange"
       />
 
@@ -84,7 +89,7 @@ export default {
       api.definedBlock
          .list({solutionID: this.$route.query.solutionID, ...this.controlsForm})
          .then(res => {
-           this.total = res.data.count
+           this.count = res.data.count
            this.tableData = res.data.results
          })
          .catch(err => {

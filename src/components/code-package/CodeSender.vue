@@ -4,6 +4,7 @@
     <el-dialog
       center
       title="请配置代码发送参数"
+      width="600px"
       :visible.sync="isShow"
       @open="handleOpen"
     >
@@ -109,8 +110,8 @@ export default {
   methods: {
     handleOpen() {
       this.name = ''
-      this.remote_machine = this.globalInfo.remoteMachineList[0].id || null
-      this.templateID = this.globalInfo.templateList[0].id || null
+      this.remote_machine = this.globalInfo?.remoteMachineList[0]?.id
+      this.templateID = this.globalInfo?.templateList[0]?.id
       this.run = true
     },
 

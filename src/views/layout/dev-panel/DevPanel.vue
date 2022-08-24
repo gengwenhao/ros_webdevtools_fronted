@@ -6,7 +6,7 @@
         <div class="icon-con" @click="$refs['code-template-lister'].isShow = true">
           <el-badge :value="globalInfo.templateCnt">
             <el-tooltip class="item" effect="dark" content="新建代码生成模板 Ctrl+Alt+T" placement="bottom-start">
-              <i class="iconfont icon-template"></i>
+              <i class="iconfont icon-daimaji"></i>
             </el-tooltip>
           </el-badge>
         </div>
@@ -14,7 +14,7 @@
         <div class="icon-con" @click="$refs['defined-block-lister'].isShow = true">
           <el-badge :value="globalInfo.blocklyFunctionCnt">
             <el-tooltip class="item" effect="dark" content="新建自定义函数 Ctrl+Alt+B" placement="bottom-start">
-              <i class="iconfont icon-chuangjianjiedian"></i>
+              <i class="iconfont icon-block"></i>
             </el-tooltip>
           </el-badge>
         </div>
@@ -27,12 +27,14 @@
           </el-badge>
         </div>
 
-        <div class="icon-con" @click="saveSolution('保存成功！', '空的工作空间无法保存解决方案')">
+        <div class="icon-con" @click="saveSolution('保存成功！', '工作空间内 暂无任何内容')">
           <el-tooltip class="item" effect="dark" content="保存到云端 Ctrl+Alt+S" placement="bottom-start">
             <i class="iconfont icon-baocun"></i>
           </el-tooltip>
         </div>
+      </div>
 
+      <div class="icon-group">
         <div class="icon-con" @click="$refs['code-packager'].isShow = true">
           <el-tooltip class="item" effect="dark" content="打包代码 Ctrl+Alt+P" placement="bottom-start">
             <i class="iconfont icon-dabaoxiazai"></i>
@@ -44,10 +46,6 @@
             <i class="iconfont icon-icon_sent"></i>
           </el-tooltip>
         </div>
-      </div>
-
-      <div class="icon-group">
-
       </div>
     </div>
 
@@ -97,12 +95,13 @@
 <script>
 import 'blockly/python'
 import _ from 'lodash'
-import {mapState} from 'vuex'
+import moment from 'moment'
+import JsFileDownloader from 'js-file-downloader'
 
+import {mapState} from 'vuex'
 import api from '@/api'
 import lib from '@/lib'
 import config from '@/config'
-import JsFileDownloader from 'js-file-downloader'
 import CodeTemplateLister from '@/components/code-template/CodeTemplateLister'
 import DefinedBlockLister from '@/components/defined-block/DefinedBlockLister'
 import RemoteMachineLister from '@/components/remote-machine/RemoteMachineLister'
@@ -138,10 +137,10 @@ export default {
 
   methods: {
     // 保存解决方案
-    saveSolution: _.debounce(function (successTips, emptyTips) {
+    saveSolution: _.throttle(function (successTips, emptyTips) {
       if (lib.isEmptyStr(this.convertedCode)) {
         if (!lib.isEmptyStr(emptyTips)) {
-          this.$message.success(emptyTips)
+          this.$message.warning(emptyTips)
         }
 
         return -1
@@ -175,7 +174,7 @@ export default {
   },
 
   created() {
-    // 添加热键
+    // 绑定热键
     this.$shortcut.bind('ctrl+alt+t', () => {
       this.$refs['code-template-lister'].isShow = true
     })
@@ -186,7 +185,7 @@ export default {
       this.$refs['remote-machine-lister'].isShow = true
     })
     this.$shortcut.bind('ctrl+alt+s', () => {
-      this.saveSolution('保存成功！', '空的工作空间无法保存解决方案')
+      this.saveSolution('保存成功！', '工作空间内 暂无任何内容')
     })
     this.$shortcut.bind('ctrl+alt+p', () => {
       this.$refs['code-packager'].isShow = true
@@ -217,8 +216,9 @@ export default {
 
     // 2 分钟自动保存解决方案一次
     this.autosaveTimer = setInterval(() => {
-      this.saveSolution('自动保存成功!')
-    }, 1000 * 60 * 2)
+      moment.locale('zh-cn')
+      this.saveSolution(`代码已于 ${moment().format('lll')} 自动保存`)
+    }, 1000 * 60 * 5)
   },
 
   destroyed() {
@@ -233,9 +233,7 @@ export default {
     ].join())
 
     // 移除解决方案自动保存定时器
-    if (this.autosaveTimer) {
-      clearInterval(this.autosaveTimer)
-    }
+    this.autosaveTimer && clearInterval(this.autosaveTimer)
     this.autosaveTimer = null
   },
 
