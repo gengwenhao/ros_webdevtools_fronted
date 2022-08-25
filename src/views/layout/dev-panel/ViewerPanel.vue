@@ -1,50 +1,20 @@
-<!-- 开发者页面 path:/dev-panel/:solutionID -->
+<!-- 观察者页面（可以开发，不可以定制解决方案、blockly块、机器人连接配置） -->
 <template>
-  <div id="dev-panel">
+  <div id="viewer-panel">
     <!-- 按钮组 -->
     <div class="icon-group-con">
 
       <!-- 左侧按钮组 -->
       <div class="icon-group">
-        <div class="icon-con" @click="$refs['code-template-lister'].isShow = true">
-          <el-badge :value="globalInfo.templateCnt">
-            <el-tooltip class="item" effect="dark" content="新建代码生成模板 Ctrl+Alt+T" placement="bottom-start">
-              <i class="iconfont icon-daimaji"></i>
-            </el-tooltip>
-          </el-badge>
-        </div>
-
-        <div class="icon-con" @click="$refs['defined-block-lister'].isShow = true">
-          <el-badge :value="globalInfo.blocklyFunctionCnt">
-            <el-tooltip class="item" effect="dark" content="新建自定义函数 Ctrl+Alt+B" placement="bottom-start">
-              <i class="iconfont icon-block"></i>
-            </el-tooltip>
-          </el-badge>
-        </div>
-
-        <div class="icon-con" @click="$refs['remote-machine-lister'].isShow = true">
-          <el-badge :value="globalInfo.remoteMachineCnt">
-            <el-tooltip class="item" effect="dark" content="新建机器人连接配置 Ctrl+Alt+I" placement="bottom-start">
-              <i class="iconfont icon-jiqiren"></i>
-            </el-tooltip>
-          </el-badge>
-        </div>
-
-        <div class="icon-con" @click="$refs['solution-sharer'].isShow = true">
-          <el-tooltip class="item" effect="dark" content="分享解决方案 Ctrl+Alt+Q" placement="bottom-start">
-            <i class="iconfont icon-fenxiang1"></i>
+        <div class="icon-con" @click="$refs['code-sender'].isShow = true">
+          <el-tooltip class="item" effect="dark" content="获取最新代码 Ctrl+Alt+Q" placement="bottom-start">
+            <i class="iconfont icon-bg-download"></i>
           </el-tooltip>
         </div>
 
         <div class="icon-con" @click="saveSolution('保存成功！', '工作空间内 暂无任何内容')">
           <el-tooltip class="item" effect="dark" content="保存工作空间到云端 Ctrl+Alt+S" placement="bottom-start">
             <i class="iconfont icon-baocun"></i>
-          </el-tooltip>
-        </div>
-
-        <div class="icon-con">
-          <el-tooltip class="item" effect="dark" content="推送工作空间 Ctrl+Alt+U" placement="bottom-start">
-            <i class="iconfont icon-shuaxin1"></i>
           </el-tooltip>
         </div>
 
@@ -75,26 +45,6 @@
       :toolbox-settings="toolbox"
       :xml-code.sync="xmlCode"
       :converted-code.sync="convertedCode"
-    />
-
-    <!--  弹出层：自定义函数列表  -->
-    <defined-block-lister
-      ref="defined-block-lister"
-    />
-
-    <!--  弹出层：代码模板列表  -->
-    <code-template-lister
-      ref="code-template-lister"
-    />
-
-    <!-- 弹出层：机器人列表 -->
-    <remote-machine-lister
-      ref="remote-machine-lister"
-    />
-
-    <!-- 弹出层：解决方案分享 -->
-    <solution-sharer
-      ref="solution-sharer"
     />
 
     <!-- 弹出层：代码发送 -->
@@ -131,15 +81,11 @@ import RemoteMachineLister from '@/components/remote-machine/RemoteMachineLister
 import CodeSender from '@/components/code-package/CodeSender'
 import CodePackager from '@/components/code-package/CodePackager'
 import BlocklyWorkspace from '@/components/blockly/BlocklyWorkspace'
-import SolutionSharer from '@/components/solution/SolutionSharer'
 
 export default {
-  name: "DevPanel",
+  name: "ViewerPanel",
 
-  components: {
-    SolutionSharer,
-    BlocklyWorkspace, CodePackager, CodeSender, RemoteMachineLister, DefinedBlockLister, CodeTemplateLister
-  },
+  components: {BlocklyWorkspace, CodePackager, CodeSender, RemoteMachineLister, DefinedBlockLister, CodeTemplateLister},
 
   data() {
     return {
@@ -174,9 +120,7 @@ export default {
       }
 
       api.solution
-         .update({
-           code: this.xmlCode, object_code: this.convertedCode
-         }, this.$route.params.solutionID)
+         .update({code: this.xmlCode, object_code: this.convertedCode}, this.$route.query.solutionID)
          .then((res) => {
            this.$message.success(successTips)
          })
@@ -196,7 +140,6 @@ export default {
         new JsFileDownloader({
           url: api.commonAPI.generateCodeURL(data.timestamp),
           filename: `${data.timestamp}-results.py`
-        }).then(() => {
         })
       }, 1000)
     }
@@ -204,18 +147,6 @@ export default {
 
   created() {
     // 绑定热键
-    this.$shortcut.bind('ctrl+alt+t', () => {
-      this.$refs['code-template-lister'].isShow = true
-    })
-    this.$shortcut.bind('ctrl+alt+b', () => {
-      this.$refs['defined-block-lister'].isShow = true
-    })
-    this.$shortcut.bind('ctrl+alt+i', () => {
-      this.$refs['remote-machine-lister'].isShow = true
-    })
-    this.$shortcut.bind('ctrl+alt+q', () => {
-      this.$refs['solution-sharer'].isShow = true
-    })
     this.$shortcut.bind('ctrl+alt+s', () => {
       this.saveSolution('保存成功！', '工作空间内 暂无任何内容')
     })
@@ -228,22 +159,18 @@ export default {
 
     // 加载解决方案信息
     api.solution
-       .get({}, this.$route.params.solutionID)
+       .get({}, this.$route.query.solutionID)
        .then(res => {
          this.xmlCode = res.data.code
          this.isShowBlocklyWS = true
        })
        .catch(err => {
-         this.$router.push({name: '404'})
+         // this.$router.push({name: '404'})
        })
-
-    // 将解决方案标记为已使用过
-    api.solution
-       .init(this.$route.params.solutionID)
 
     // 加载全局信息
     this.$store.dispatch('updateGlobalInfo', {
-      solutionID: this.$route.params.solutionID
+      solutionID: this.$route.query.solutionID
     })
 
     // 2 分钟自动保存解决方案一次
@@ -256,10 +183,6 @@ export default {
   destroyed() {
     // 移除热键
     this.$shortcut.unbind([
-      'ctrl+alt+t',
-      'ctrl+alt+b',
-      'ctrl+alt+i',
-      'ctrl+alt+q',
       'ctrl+alt+s',
       'ctrl+alt+p',
       'ctrl+alt+enter'
@@ -268,15 +191,6 @@ export default {
     // 移除解决方案自动保存定时器
     this.autosaveTimer && clearInterval(this.autosaveTimer)
     this.autosaveTimer = null
-  },
-
-  beforeRouteLeave(to, from, next) {
-    if (this.autosaveTimer) {
-      clearInterval(this.autosaveTimer)
-    }
-    this.autosaveTimer = null
-
-    next()
   }
 }
 </script>
@@ -284,7 +198,7 @@ export default {
 <style scoped lang="scss">
 @import "../../../assets/palette";
 
-#dev-panel {
+#viewer-panel {
   user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;

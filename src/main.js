@@ -8,6 +8,7 @@ import store from '@/store'
 import '@/plugins/key-manager'
 import '@/plugins/element'
 import '@/plugins/vue-toastification'
+import '@/plugins/vue-clipboard2'
 import { createPinia, PiniaVuePlugin } from 'pinia'
 
 // config

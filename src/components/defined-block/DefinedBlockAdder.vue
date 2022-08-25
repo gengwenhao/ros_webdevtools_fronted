@@ -68,7 +68,7 @@ export default {
       this.$emit('confirm', form)
 
       api.definedBlock
-         .save(form, this.$route.query.solutionID)
+         .save(form, this.$route.params.solutionID)
          .then(res => {
            this.$emit('success', res.data)
            this.isShow = false

@@ -97,7 +97,7 @@ export default {
       this.$emit('confirm', this.form)
 
       api.remoteMachine
-         .save(this.form, this.$route.query.solutionID)
+         .save(this.form, this.$route.params.solutionID)
          .then(res => {
            this.$emit('success', res.data)
            this.isShow = false

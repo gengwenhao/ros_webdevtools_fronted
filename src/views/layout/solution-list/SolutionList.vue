@@ -56,7 +56,7 @@
                   <el-button
                     size="mini"
                     type="info"
-                    @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})"
+                    @click="$router.push({name: 'devPanel', params: {solutionID: $scope.row.id}})"
                   >
                     已了解，进入解决方案
                   </el-button>
@@ -76,7 +76,7 @@
                 plain
                 size="small"
                 type="info"
-                @click="$router.push({name: 'devPanel', query: {solutionID: $scope.row.id}})">进入解决方案
+                @click="$router.push({name: 'devPanel', params: {solutionID: $scope.row.id}})">进入解决方案
               </el-button>
               <el-button
                 icon="el-icon-delete"
@@ -130,7 +130,7 @@
 <script>
 import api from '@/api'
 import config from '@/config'
-import commonElTable from '@/mixins/common-el-table'
+import commonElTableMixin from '@/mixins/common-el-table-mixin'
 import SolutionAdder from '@/components/solution/SolutionAdder'
 import OpeningAnimation from '@/components/common/OpeningAnimation'
 
@@ -139,7 +139,7 @@ export default {
 
   components: {OpeningAnimation, SolutionAdder},
 
-  mixins: [commonElTable],
+  mixins: [commonElTableMixin],
 
   data() {
     return {

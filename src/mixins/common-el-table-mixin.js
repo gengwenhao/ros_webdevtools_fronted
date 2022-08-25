@@ -1,5 +1,5 @@
 // 表格需要的相关逻辑
-const commonElTable = {
+const commonElTableMixin = {
   data() {
     return {
       // 数据量
@@ -59,4 +59,4 @@ const commonElTable = {
   }
 }
 
-export default commonElTable
+export default commonElTableMixin

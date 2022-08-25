@@ -36,12 +36,12 @@
 <script>
 import {mapState} from 'vuex'
 import api from '@/api'
-import commonElTable from '@/mixins/common-el-table'
+import commonElTableMixin from '@/mixins/common-el-table-mixin'
 
 export default {
   name: "CodePackager",
 
-  mixins: [commonElTable],
+  mixins: [commonElTableMixin],
 
   props: ['code'],
 

@@ -10,6 +10,7 @@ export default [
       title: 'Home | ROS WEB DEVTOOLS'
     },
     children: [
+      // 解决方案列表
       {
         path: '/solution-list',
         name: 'solutionList',
@@ -19,14 +20,28 @@ export default [
           keepAlive: true
         }
       },
+
+      // 开发者页面
       {
-        path: '/dev-panel',
+        path: '/dev-panel/:solutionID',
         name: 'devPanel',
         component: () => import('@/views/layout/dev-panel/DevPanel'),
         meta: {
           title: 'Development Panel | ROS WEB DEVTOOLS'
         }
       },
+
+      // 观察者（非登录人员）页面
+      {
+        path: '/viewer-panel/:viewerID',
+        name: 'viewerPanel',
+        component: () => import('@/views/layout/dev-panel/ViewerPanel'),
+        meta: {
+          title: 'Viewer Panel | ROS WEB DEVTOOLS'
+        }
+      },
+
+      // ssh页面
       {
         path: '/command-panel',
         name: 'commandPanel',
@@ -37,11 +52,15 @@ export default [
       }
     ]
   },
+
+  // 全局 404 页面
   {
     path: '/404',
     name: '404',
     component: () => import('@/views/error-page/404')
   },
+
+  // 全局未匹配跳转 404 页面
   {
     path: '*',
     redirect: '/404'

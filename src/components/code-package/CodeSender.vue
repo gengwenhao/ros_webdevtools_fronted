@@ -4,15 +4,15 @@
     <el-dialog
       center
       title="请配置代码发送参数"
-      width="600px"
+      width="700px"
       :visible.sync="isShow"
       @open="handleOpen"
     >
 
-      <el-form label-width="110px">
+      <el-form label-width="150px">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="脚本名称" required>
+            <el-form-item label="生成脚本的名称" required>
               <div class="control-item">
                 <el-input placeholder="输入脚本名称" v-model="name"/>
               </div>
@@ -22,7 +22,7 @@
 
         <el-row>
           <el-col :span="24">
-            <el-form-item label="代码生成模板" required>
+            <el-form-item label="代码依赖的模板" required>
               <div class="control-item">
                 <el-select placeholder="请选择模板" v-model="templateID">
                   <el-option
@@ -39,9 +39,9 @@
 
         <el-row>
           <el-col :span="24">
-            <el-form-item label="远程主机" required>
+            <el-form-item label="接收代码的主机" required>
               <div class="control-item">
-                <el-select placeholder="请选择设备" v-model="remote_machine">
+                <el-select placeholder="请选择设备" style="width: 100%;" v-model="remote_machine">
                   <el-option
                     v-for="item in globalInfo.remoteMachineList"
                     :key="item.id"
@@ -56,17 +56,21 @@
 
         <el-row>
           <el-col :span="24">
-            <el-form-item label="自动运行">
-              <el-switch
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                style="display: block"
-                v-model="run"
-              >
-              </el-switch>
+            <el-form-item label="自动运行脚本">
+              <div class="inner-con">
+                <span>否</span>
+                <el-switch
+                  active-color="#409EFF"
+                  inactive-color="#ff4949"
+                  style="margin: 0 12px;"
+                  v-model="run"
+                />
+                <span>是</span>
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
+
       </el-form>
 
       <span slot="footer" class="dialog-footer">
@@ -127,7 +131,7 @@ export default {
         remote_machine: this.remote_machine,
         templateID: this.templateID,
         run: this.run,
-        solutionID: this.$route.query.solutionID || null,
+        solutionID: this.$route.params.solutionID || null,
         code: this.code
       }
 

@@ -25,7 +25,7 @@
             <el-tag>{{ scope.row.name }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="ip" align="center" label="IP" width="100">
+        <el-table-column prop="ip" align="center" label="IP" width="120">
           <template v-slot="scope">
             <el-tag effect="dark" type="primary">{{ scope.row.ip }}</el-tag>
           </template>
@@ -81,14 +81,14 @@
 
 <script>
 import api from '@/api'
-import commonElTable from '@/mixins/common-el-table'
+import commonElTableMixin from '@/mixins/common-el-table-mixin'
 import RemoteMachineAdder from '@/components/remote-machine/RemoteMachineAdder'
 import RemoteMachineEditor from '@/components/remote-machine/RemoteMachineEditor'
 
 export default {
   name: "RemoteMachineLister",
   components: {RemoteMachineEditor, RemoteMachineAdder},
-  mixins: [commonElTable],
+  mixins: [commonElTableMixin],
 
   data() {
     return {
@@ -104,7 +104,7 @@ export default {
   methods: {
     fetchTableData() {
       api.remoteMachine
-         .list({solutionID: this.$route.query.solutionID, ...this.controlsForm})
+         .list({solutionID: this.$route.params.solutionID, ...this.controlsForm})
          .then(res => {
            this.count = res.data.count
            this.tableData = res.data.results
@@ -134,7 +134,7 @@ export default {
            .then(() => {
              this.$message.success('该连接配置删除成功!')
              this.fetchTableData()
-             this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
+             this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.params.solutionID})
            })
       })
     },
@@ -142,13 +142,13 @@ export default {
     handleAdderSuccess(data) {
       this.$message.success('该配置已添加完成！')
       this.fetchTableData()
-      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
+      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.params.solutionID})
     },
 
     handleEditorSuccess(data) {
       this.$message.success('配置修改成功！')
       this.fetchTableData()
-      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
+      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.params.solutionID})
     }
   }
 }

@@ -64,14 +64,14 @@
 
 <script>
 import api from '@/api'
-import commonElTable from '@/mixins/common-el-table'
+import commonElTableMixin from '@/mixins/common-el-table-mixin'
 import DefinedBlockAdder from '@/components/defined-block/DefinedBlockAdder'
 import DefinedBlockEditor from '@/components/defined-block/DefinedBlockEditor'
 
 export default {
   name: "DefinedBlockLister",
   components: {DefinedBlockEditor, DefinedBlockAdder},
-  mixins: [commonElTable],
+  mixins: [commonElTableMixin],
 
   data() {
     return {
@@ -87,7 +87,7 @@ export default {
   methods: {
     fetchTableData() {
       api.definedBlock
-         .list({solutionID: this.$route.query.solutionID, ...this.controlsForm})
+         .list({solutionID: this.$route.params.solutionID, ...this.controlsForm})
          .then(res => {
            this.count = res.data.count
            this.tableData = res.data.results
@@ -113,7 +113,7 @@ export default {
            .then(() => {
              this.$message.success('函数删除成功')
              this.fetchTableData()
-             this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
+             this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.params.solutionID})
            })
       })
     },
@@ -121,13 +121,13 @@ export default {
     handleAdderSuccess(data) {
       this.$message.success('自定义函数添加完成！')
       this.fetchTableData()
-      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
+      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.params.solutionID})
     },
 
     handleEditorSuccess(data) {
       this.$message.success('自定义函数修改成功！')
       this.fetchTableData()
-      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.query.solutionID})
+      this.$store.dispatch('updateGlobalInfo', {solutionID: this.$route.params.solutionID})
     }
   }
 }
