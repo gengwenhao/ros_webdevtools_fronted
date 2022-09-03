@@ -27,9 +27,9 @@
         </el-table-column>
         <el-table-column prop="add_time" align="center" label="添加时间"/>
         <el-table-column prop="update_time" align="center" label="更新时间"/>
-        <el-table-column label="操作" align="center" width="200px">
+        <el-table-column label="操作" align="center">
           <template v-slot="scope">
-            <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>
+<!--            <el-button type="primary" @click="handleEdit(scope.row)">编辑</el-button>-->
             <el-button type="danger" @click="handleDelete(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -38,8 +38,8 @@
       <el-pagination
         layout="total, prev, pager, next, jumper"
         style="margin-top: 12px;"
-        :current-page="controlsForm.page"
-        :page-size="controlsForm.page_size"
+        :current-page="pageForm.page"
+        :page-size="pageForm.page_size"
         :total="count"
         @current-change="handleCurrentChange"
       />
@@ -77,7 +77,7 @@ export default {
     return {
       isShow: false,
       currentEditData: null,
-      controlsForm: {
+      pageForm: {
         page: 1,
         page_size: 5
       },
@@ -87,7 +87,7 @@ export default {
   methods: {
     fetchTableData() {
       api.definedBlock
-         .list({solutionID: this.$route.params.solutionID, ...this.controlsForm})
+         .list({solutionID: this.$route.params.solutionID, ...this.pageForm})
          .then(res => {
            this.count = res.data.count
            this.tableData = res.data.results

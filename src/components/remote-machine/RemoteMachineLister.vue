@@ -55,8 +55,8 @@
       <el-pagination
         layout="total, prev, pager, next, jumper"
         style="margin-top: 12px;"
-        :current-page="controlsForm.page"
-        :page-size="controlsForm.page_size"
+        :current-page="pageForm.page"
+        :page-size="pageForm.page_size"
         :total="count"
         @current-change="handleCurrentChange"
       />
@@ -87,14 +87,16 @@ import RemoteMachineEditor from '@/components/remote-machine/RemoteMachineEditor
 
 export default {
   name: "RemoteMachineLister",
+
   components: {RemoteMachineEditor, RemoteMachineAdder},
+
   mixins: [commonElTableMixin],
 
   data() {
     return {
       isShow: false,
       currentEditData: null,
-      controlsForm: {
+      pageForm: {
         page: 1,
         page_size: 5
       }
@@ -104,7 +106,7 @@ export default {
   methods: {
     fetchTableData() {
       api.remoteMachine
-         .list({solutionID: this.$route.params.solutionID, ...this.controlsForm})
+         .list({solutionID: this.$route.params.solutionID, ...this.pageForm})
          .then(res => {
            this.count = res.data.count
            this.tableData = res.data.results

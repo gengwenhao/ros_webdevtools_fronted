@@ -24,3 +24,14 @@ export function blocklyXMLToDOM(xmlText, workspace) {
     Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xmlText), workspace)
   }
 }
+
+// 生成验证码
+export const randomCode = (len) => {
+  const source = Array.from('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+')
+  const res = []
+  while (res.length !== len) {
+    res.push(source[Math.floor(Math.random() * source.length)])
+  }
+
+  return res.join('')
+}

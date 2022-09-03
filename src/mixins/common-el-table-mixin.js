@@ -9,7 +9,7 @@ const commonElTableMixin = {
       // 表格选中
       tableSelectionItems: [],
       // form
-      controlsForm: {
+      pageForm: {
         // 当前页码
         page: 1,
         // 分页大小
@@ -27,13 +27,13 @@ const commonElTableMixin = {
     // table handler
     // 表格分页变化
     handleSizeChange(size) {
-      this.controlsForm.page_size = Number(size)
+      this.pageForm.page_size = Number(size)
       this.fetchTableData()
     },
 
     // 表格页码变化
     handleCurrentChange(page) {
-      this.controlsForm.page = Number(page)
+      this.pageForm.page = Number(page)
       this.fetchTableData()
     },
 

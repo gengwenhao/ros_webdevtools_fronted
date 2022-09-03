@@ -33,7 +33,7 @@ export default [
 
       // 观察者（非登录人员）页面
       {
-        path: '/viewer-panel/:viewerID',
+        path: '/viewer-panel/:uuid',
         name: 'viewerPanel',
         component: () => import('@/views/layout/dev-panel/ViewerPanel'),
         meta: {

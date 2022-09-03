@@ -39,8 +39,8 @@
       <el-pagination
         layout="total, prev, pager, next, jumper"
         style="margin-top: 12px;"
-        :current-page="controlsForm.page"
-        :page-size="controlsForm.page_size"
+        :current-page="pageForm.page"
+        :page-size="pageForm.page_size"
         :total="count"
         @current-change="handleCurrentChange"
       />
@@ -78,7 +78,7 @@ export default {
     return {
       isShow: false,
       currentEditData: null,
-      controlsForm: {
+      pageForm: {
         page: 1,
         page_size: 5
       }
@@ -90,7 +90,7 @@ export default {
       api.codeTemplate
          .list({
            solutionID: this.$route.params.solutionID,
-           ...this.controlsForm
+           ...this.pageForm
          })
          .then(res => {
            this.count = res.data.count
